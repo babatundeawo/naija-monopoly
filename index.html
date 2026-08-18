@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Naija Monopoly — Wealth Wahala Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%87%B3%F0%9F%87%AC%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --green:#008751; --white:#fff; --gold:#d4a017; --dark:#111417;
+    --panel:#171b1f; --panel2:#1e2429; --accent:#e8590c; --text:#e9edf1;
+    --muted:#8b96a1; --brown:#8b5a2b; --lightblue:#7ec8e3; --pink:#e91e8c;
+    --orange:#ff8c00; --red:#d7263d; --yellow:#f4c20d; --darkblue:#1b4f8c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Segoe UI',Tahoma,Arial,sans-serif;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,.015) 0 2px, transparent 2px 40px),
+      radial-gradient(circle at 20% 10%,#0e2e1f,#05070a 60%);
+    color:var(--text); min-height:100vh;
+  }
+  header{
+    padding:14px 20px; display:flex; align-items:center; justify-content:space-between;
+    background:linear-gradient(90deg,var(--green),#026b3d); border-bottom:4px solid var(--gold);
+    flex-wrap:wrap; gap:8px;
+  }
+  header h1{margin:0; font-size:22px; letter-spacing:.5px;}
+  header h1 span{color:var(--gold);}
+  header .tag{font-size:12px; color:#d8f5e6;}
+  .header-actions{display:flex; gap:8px; align-items:center;}
+  .header-actions button{padding:8px 12px; font-size:13px;}
+  #app{display:flex; gap:16px; padding:16px; align-items:flex-start; flex-wrap:wrap; justify-content:center;}
+
+  #setup{
+    max-width:600px; margin:40px auto; background:var(--panel); border:1px solid #2a323a;
+    border-radius:14px; padding:26px; box-shadow:0 10px 40px rgba(0,0,0,.5);
+  }
+  #setup h2{margin-top:0; color:var(--gold);}
+  .player-row{display:flex; gap:8px; align-items:center; margin:8px 0; background:var(--panel2); padding:8px 10px; border-radius:8px; flex-wrap:wrap;}
+  .player-row input[type=text]{flex:1; min-width:100px; padding:6px 8px; border-radius:6px; border:1px solid #333; background:#0d1114; color:var(--text);}
+  .player-row select{padding:6px; border-radius:6px; background:#0d1114; color:var(--text); border:1px solid #333;}
+  .swatch{width:20px;height:20px;border-radius:50%; border:2px solid #fff; flex-shrink:0;}
+  .rules-box{background:var(--panel2); border-radius:8px; padding:10px 12px; font-size:11.5px; color:var(--muted); margin-top:14px; line-height:1.6;}
+  .rules-box b{color:#cfe;}
+  button{
+    cursor:pointer; border:none; border-radius:8px; padding:10px 16px; font-weight:600;
+    background:var(--gold); color:#241a02; font-size:14px; transition:transform .1s ease;
+  }
+  button:hover{filter:brightness(1.08);}
+  button:active{transform:scale(.96);}
+  button.secondary{background:#2a323a; color:var(--text);}
+  button.danger{background:var(--red); color:#fff;}
+  button:disabled{opacity:.4; cursor:not-allowed; transform:none;}
+  #startBtn{width:100%; margin-top:14px; padding:14px; font-size:16px;}
+
+  .board-wrap{
+    padding:10px; border-radius:16px;
+    background:linear-gradient(90deg,#008751 0 33.3%, #ffffff 33.3% 66.6%, #008751 66.6% 100%);
+    box-shadow:0 25px 70px rgba(0,0,0,.7);
+  }
+  #board{
+    display:grid; grid-template-columns:repeat(11,68px); grid-template-rows:repeat(11,68px);
+    background:#0a3d24; border:6px solid var(--gold); border-radius:10px; position:relative;
+  }
+  .tile{
+    border:1px solid #14311f; position:relative; background:#0d4a2c; font-size:9px; overflow:hidden;
+    display:flex; flex-direction:column; transition:filter .3s ease;
+  }
+  .tile .bar{height:12px; width:100%; flex-shrink:0;}
+  .tile .name{padding:2px 3px; line-height:1.05; font-weight:600; color:#eafff2;}
+  .tile .price{margin-top:auto; padding:2px 3px; color:#c8e6d4; font-size:8.5px;}
+  .tile .icon{position:absolute; top:16px; right:2px; font-size:14px;}
+  .tile .bld{position:absolute; bottom:12px; left:2px; display:flex; gap:1px;}
+  .tile.corner{display:flex; align-items:center; justify-content:center; text-align:center; font-size:9px; font-weight:800; background:#0a3320; padding:4px; gap:2px;}
+  .tile.corner .corner-icon{font-size:20px;}
+  .tile.mortgaged{filter:grayscale(.7) brightness(.6);}
+  .tile.tile-flash{ animation: tileFlash .7s ease; }
+  @keyframes tileFlash{ 0%{ box-shadow: 0 0 0 4px var(--gold) inset;} 100%{ box-shadow:none;} }
+  .center-area{
+    grid-column:2/11; grid-row:2/11; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:10px; padding:10px; text-align:center;
+  }
+  .center-area h2{margin:0; font-size:26px; color:var(--gold); text-shadow:0 2px 6px #000;}
+  .center-area .sub{color:#bfe9d3; font-size:12px; margin-bottom:6px;}
+  #dice{display:flex; gap:10px;}
+  .die-face{
+    width:46px; height:46px; background:#fff; border-radius:8px; display:grid;
+    grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); padding:7px;
+    box-shadow:0 4px 10px rgba(0,0,0,.5); gap:1px;
+  }
+  .die-face.rolling{ animation: diceShake .15s linear infinite; }
+  @keyframes diceShake{ 0%{transform:rotate(0deg);} 50%{transform:rotate(-12deg);} 100%{transform:rotate(12deg);} }
+  .dot{border-radius:50%;}
+  .dot.on{background:#111;}
+  #rollBtn{font-size:16px; padding:12px 26px;}
+  #log{
+    width:280px; max-height:130px; overflow-y:auto; background:rgba(0,0,0,.35); border-radius:8px;
+    padding:8px; font-size:11px; text-align:left; color:#cfe;
+  }
+  #log div{margin-bottom:3px; animation: logIn .25s ease;}
+  @keyframes logIn{ from{opacity:0; transform:translateX(-6px);} to{opacity:1; transform:translateX(0);} }
+  .token-badge{
+    position:absolute; width:20px; height:20px; border-radius:50%; display:flex; align-items:center;
+    justify-content:center; font-size:12px; border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.6);
+    z-index:6; animation: tokenPop .25s ease;
+  }
+  .token-badge.landed{ animation: tokenPop .25s ease, tokenBounce .5s ease .2s; }
+  @keyframes tokenPop{ 0%{transform:scale(.3); opacity:.3;} 60%{transform:scale(1.25);} 100%{transform:scale(1); opacity:1;} }
+  @keyframes tokenBounce{ 0%{transform:translateY(0);} 30%{transform:translateY(-9px);} 55%{transform:translateY(0);} 75%{transform:translateY(-4px);} 100%{transform:translateY(0);} }
+
+  #sidebar{width:310px; display:flex; flex-direction:column; gap:12px;}
+  .card{background:var(--panel); border:1px solid #2a323a; border-radius:12px; padding:12px;}
+  .card h3{margin:0 0 8px 0; color:var(--gold); font-size:14px;}
+  .player-card{border-radius:10px; padding:10px; margin-bottom:8px; background:var(--panel2); border-left:5px solid #666; transition:box-shadow .3s ease;}
+  .player-card.current{ animation: pulseGlow 1.8s ease-in-out infinite; }
+  @keyframes pulseGlow{ 0%,100%{box-shadow:0 0 0 0 rgba(212,160,23,.55);} 50%{box-shadow:0 0 14px 3px rgba(212,160,23,.55);} }
+  .player-card .pname{font-weight:700; display:flex; justify-content:space-between; gap:6px;}
+  .player-card .cash{color:#9be29b; font-weight:700; display:inline-block;}
+  .player-card .cash.flash-pos{ animation: flashGreen .6s ease; }
+  .player-card .cash.flash-neg{ animation: flashRed .6s ease; }
+  @keyframes flashGreen{ 0%{color:#8fffb0; transform:scale(1.3);} 100%{color:#9be29b; transform:scale(1);} }
+  @keyframes flashRed{ 0%{color:#ff9a9a; transform:scale(1.3);} 100%{color:#9be29b; transform:scale(1);} }
+  .cash-float{ position:fixed; font-weight:800; font-size:13px; animation: floatUp 1.3s ease forwards; pointer-events:none; z-index:200; }
+  @keyframes floatUp{ 0%{transform:translateY(0); opacity:1;} 100%{transform:translateY(-42px); opacity:0;} }
+  .prop-list{font-size:11px; color:var(--muted); margin-top:4px; max-height:60px; overflow-y:auto;}
+  #actions{display:flex; flex-direction:column; gap:8px;}
+  #actions button{width:100%;}
+  .modal-bg{
+    position:fixed; inset:0; background:rgba(0,0,0,.65); display:flex; align-items:center;
+    justify-content:center; z-index:50; padding:12px; animation: fadeIn .2s ease;
+  }
+  @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+  .modal{background:var(--panel); border:1px solid var(--gold); border-radius:14px; padding:24px; max-width:440px; text-align:center; max-height:88vh; overflow-y:auto; animation: modalIn .25s ease; }
+  @keyframes modalIn{ from{opacity:0; transform:scale(.92) translateY(10px);} to{opacity:1; transform:scale(1) translateY(0);} }
+  .modal h3{color:var(--gold); margin-top:0;}
+  .modal .row{display:flex; gap:10px; margin-top:16px; justify-content:center; flex-wrap:wrap;}
+  .hidden{display:none !important;}
+  footer{text-align:center; padding:14px; color:#69766f; font-size:11px;}
+  #buildPanel{display:flex; flex-direction:column; gap:6px; max-height:210px; overflow-y:auto;}
+  .build-row{display:flex; align-items:center; justify-content:space-between; gap:6px; background:var(--panel2); padding:6px 8px; border-radius:6px; font-size:11px;}
+  .build-row button{padding:4px 8px; font-size:11px; white-space:nowrap;}
+  .muted{color:var(--muted); font-size:11px;}
+  .bld svg{ animation: popIn .3s ease; }
+  @keyframes popIn{ 0%{transform:scale(0); opacity:0;} 70%{transform:scale(1.2);} 100%{transform:scale(1); opacity:1;} }
+  #winnerConfetti{position:fixed; inset:0; pointer-events:none; z-index:100; overflow:hidden;}
+  .confetti-piece{position:absolute; top:-20px; width:8px; height:14px; opacity:.9; animation: confettiFall linear forwards;}
+  @keyframes confettiFall{ to{transform:translateY(110vh) rotate(540deg); opacity:.2;} }
+  @media (max-width:900px){
+    #board{grid-template-columns:repeat(11,26px); grid-template-rows:repeat(11,26px);}
+    .tile{font-size:5px;} .tile .bar{height:6px;} .token-badge{width:10px;height:10px; font-size:7px;}
+    .tile .icon{font-size:8px; top:8px;} .tile .bld svg{width:5px!important; height:5px!important;}
+    .center-area h2{font-size:12px;} .die-face{width:26px;height:26px;padding:4px;}
+    .tile.corner .corner-icon{font-size:11px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🇳🇬 Naija <span>Monopoly</span> — Wealth Wahala Edition</h1>
+    <div class="tag">Full official rules · Build your empire from Yaba to Banana Island</div>
+  </div>
+  <div class="header-actions">
+    <button class="secondary" onclick="showRules()">📜 Rules</button>
+    <button class="secondary" id="muteBtn" onclick="toggleMute()">🔊</button>
+    <button class="secondary hidden" id="newGameBtn" onclick="confirmNewGame()">🔄 New Game</button>
+  </div>
+</header>
+
+<div id="setup">
+  <h2>Start a New Game</h2>
+  <p style="color:var(--muted); font-size:13px;">2–4 players. Set names, tokens, colors and whether each is Human or Computer.</p>
+  <div id="playerRows"></div>
+  <div style="display:flex; gap:8px; margin-top:10px;">
+    <button class="secondary" onclick="addPlayerRow()">+ Add Player</button>
+    <button class="secondary" onclick="removePlayerRow()">– Remove Player</button>
+  </div>
+  <div class="rules-box">
+    <b>Full rule set included:</b> ₦1,500 starting cash · pass GO collects ₦200 · unbought properties go to
+    <b>auction</b> · buy houses/hotels (limited bank stock, even-building enforced) · <b>mortgage &amp; unmortgage</b>
+    (10% interest) · player-to-player <b>trading</b> · Income Tax choice of flat ₦200 or 10% net worth · Luxury Tax ₦100 ·
+    Chance &amp; Community Chest cards (including advance-to-nearest-railroad/utility) · Jail (roll doubles, pay ₦50 bail,
+    use a Get-Out-of-Jail-Free card, or wait 3 turns) · 3 doubles in a row sends you to jail · Free Parking pays nothing
+    (official rule) · bankruptcy &amp; last-player-standing win.
+  </div>
+  <button id="startBtn" onclick="startGame()">🎲 Start Game</button>
+</div>
+
+<div id="app" class="hidden">
+  <div class="board-wrap">
+    <div id="board"></div>
+  </div>
+  <div id="sidebar">
+    <div class="card">
+      <h3>Players</h3>
+      <div id="playersPanel"></div>
+    </div>
+    <div class="card">
+      <h3>Actions</h3>
+      <div id="actions">
+        <button id="rollBtn" onclick="rollDice()">🎲 Roll Dice</button>
+        <button id="endTurnBtn" onclick="endTurn()" disabled>➡ End Turn</button>
+        <button id="payBailBtn" onclick="payBail()" class="secondary hidden">🔓 Pay ₦50 Bail</button>
+        <button id="useCardBtn" onclick="useJailCard()" class="secondary hidden">🎟️ Use Jail Card</button>
+        <button id="tradeBtn" class="secondary hidden" onclick="openTradeModal()">🤝 Propose Trade</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>My Properties</h3>
+      <div id="buildPanel"><p class="muted">Own properties to manage them here. Click any tile to view its deed.</p></div>
+    </div>
+  </div>
+</div>
+
+<footer>Made for GitHub hosting · Naija Monopoly is a fan-made unofficial parody, not affiliated with Hasbro.</footer>
+
+<div id="modalRoot"></div>
+<div id="winnerConfetti"></div>
+
+<script>
+/* ============================= AUDIO ============================= */
+let muted = false;
+let audioCtx = null;
+function getAudioCtx(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; }
+  }
+  return audioCtx;
+}
+function playTone(freq, duration=140, type='sine', vol=0.14, delay=0){
+  if(muted) return;
+  const ctx = getAudioCtx();
+  if(!ctx) return;
+  try{
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.value = vol;
+    osc.connect(gain); gain.connect(ctx.destination);
+    const start = ctx.currentTime + delay;
+    osc.start(start);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration/1000);
+    osc.stop(start + duration/1000 + 0.02);
+  }catch(e){}
+}
+function sfxRoll(){ playTone(220,70,'square',0.08); }
+function sfxSettle(){ playTone(440,120,'triangle',0.12); }
+function sfxGain(amt){ if(amt>0) playTone(700,140,'sine',0.12); else if(amt<0) playTone(180,160,'sawtooth',0.1); }
+function sfxBuy(){ playTone(520,90,'triangle',0.14); playTone(780,140,'triangle',0.14,0.09); }
+function sfxBankrupt(){ playTone(300,180,'sawtooth',0.12); playTone(200,220,'sawtooth',0.12,0.18); playTone(120,300,'sawtooth',0.12,0.4); }
+function sfxWin(){ [523,659,784,1046].forEach((f,i)=>playTone(f,220,'triangle',0.15,i*0.16)); }
+function toggleMute(){
+  muted = !muted;
+  document.getElementById('muteBtn').textContent = muted?'🔇':'🔊';
+}
+
+/* ============================= ICONS ============================= */
+const HOUSE_SVG = `<svg viewBox="0 0 24 24" width="9" height="9"><path d="M3 11 L12 4 L21 11 V21 H3 Z" fill="#2ecc71" stroke="#0a3d24" stroke-width="1.5"/></svg>`;
+const HOTEL_SVG = `<svg viewBox="0 0 24 24" width="15" height="15"><rect x="4" y="9" width="16" height="12" fill="#d7263d" stroke="#5a0d14" stroke-width="1.5"/><path d="M2 10 L12 3 L22 10 Z" fill="#d7263d" stroke="#5a0d14" stroke-width="1.5"/></svg>`;
+const TOKENS = ['🚌','🏍️','🍲','⚽','🥁','🌴','👑','💵'];
+const TOKEN_NAMES = {'🚌':'Danfo Bus','🏍️':'Okada','🍲':'Jollof Pot','⚽':'Football','🥁':'Talking Drum','🌴':'Palm Tree','👑':'Crown','💵':'Naira Note'};
+
+/* ============================= BOARD DATA ============================= */
+const GROUP_COLORS = {
+  brown:'var(--brown)', lightblue:'var(--lightblue)', pink:'var(--pink)', orange:'var(--orange)',
+  red:'var(--red)', yellow:'var(--yellow)', darkblue:'var(--darkblue)', green:'#2e8b57',
+  rail:'#333', util:'#555'
+};
+function buildRent(price){
+  const base = Math.round(price*0.08);
+  return [base, base*5, base*15, base*30, base*45, base*60];
+}
+const TILES = [
+  {n:'BÈRÈ — GO', t:'go'},
+  {n:'Yaba', t:'prop', grp:'brown', price:60},
+  {n:'Ileya Chest', t:'chest'},
+  {n:'Ajegunle', t:'prop', grp:'brown', price:60},
+  {n:'Import Duty Tax', t:'tax', amt:200, choice:true},
+  {n:'Lagos Railway', t:'rail', price:200},
+  {n:'Kubwa', t:'prop', grp:'lightblue', price:100},
+  {n:'Aza Chance', t:'chance'},
+  {n:'Wuse', t:'prop', grp:'lightblue', price:100},
+  {n:'Garki', t:'prop', grp:'lightblue', price:120},
+  {n:'Kirikiri — Just Visiting', t:'jail'},
+  {n:'Bodija', t:'prop', grp:'pink', price:140},
+  {n:'NEPA Power Co.', t:'util', price:150},
+  {n:'Dugbe', t:'prop', grp:'pink', price:140},
+  {n:'Mokola', t:'prop', grp:'pink', price:160},
+  {n:'Ibadan Railway', t:'rail', price:200},
+  {n:'GRA Enugu', t:'prop', grp:'orange', price:180},
+  {n:'Ileya Chest', t:'chest'},
+  {n:'Ogui, Enugu', t:'prop', grp:'orange', price:180},
+  {n:'New Haven, Enugu', t:'prop', grp:'orange', price:200},
+  {n:'Motor Park — Free Parking', t:'free'},
+  {n:'Sabon Gari, Kano', t:'prop', grp:'red', price:220},
+  {n:'Aza Chance', t:'chance'},
+  {n:'Fagge, Kano', t:'prop', grp:'red', price:220},
+  {n:'Kano City', t:'prop', grp:'red', price:240},
+  {n:'Kano Railway', t:'rail', price:200},
+  {n:'GRA, Port Harcourt', t:'prop', grp:'yellow', price:260},
+  {n:'Trans Amadi, PH', t:'prop', grp:'yellow', price:260},
+  {n:'NITEL Water Board', t:'util', price:150},
+  {n:'Diobu, PH', t:'prop', grp:'yellow', price:280},
+  {n:'Go To Kirikiri Prison!', t:'gotojail'},
+  {n:'Maitama, Abuja', t:'prop', grp:'green', price:300},
+  {n:'Asokoro, Abuja', t:'prop', grp:'green', price:300},
+  {n:'Ileya Chest', t:'chest'},
+  {n:'Jabi, Abuja', t:'prop', grp:'green', price:320},
+  {n:'PH Railway', t:'rail', price:200},
+  {n:'Aza Chance', t:'chance'},
+  {n:'Ikoyi, Lagos', t:'prop', grp:'darkblue', price:350},
+  {n:'Luxury Tax', t:'tax', amt:100, choice:false},
+  {n:'Banana Island, Lagos', t:'prop', grp:'darkblue', price:400},
+];
+TILES.forEach(t=>{
+  if(t.t==='prop') t.rent = buildRent(t.price);
+  if(t.t==='prop'||t.t==='rail'||t.t==='util'){ t.owner=null; t.houses=0; t.mortgaged=false; }
+});
+
+const CHANCE_CARDS = [
+  ()=>({msg:'Naija wins AFCON! Collect ₦100 from bank.', fn:p=>{changeCash(p,100);}}),
+  ()=>({msg:'NEPA took light. Pay ₦50 for generator fuel.', fn:p=>{changeCash(p,-50);}}),
+  ()=>({msg:'Your Jollof rice won a cook-off! Collect ₦75.', fn:p=>{changeCash(p,75);}}),
+  ()=>({msg:'Go to Banana Island, Lagos.', fn:p=>{movePlayerTo(p, 39, true);}}),
+  ()=>({msg:'Advance to GO. Collect ₦200.', fn:p=>{movePlayerTo(p, 0, false); changeCash(p,200);}}),
+  ()=>({msg:'Go directly to Kirikiri Prison. Do not pass GO.', fn:p=>{sendToJail(p);}}),
+  ()=>({msg:'Get Out of Jail Free card — keep it until needed.', fn:p=>{p.getOutOfJail++;}}),
+  ()=>({msg:'You underpriced fuel at your filling station. Pay ₦150 fine.', fn:p=>{changeCash(p,-150);}}),
+  ()=>({msg:'Your Aunty sent Detty December alert. Collect ₦50.', fn:p=>{changeCash(p,50);}}),
+  ()=>({msg:'Go back 3 spaces.', fn:p=>{movePlayerTo(p, (p.pos-3+40)%40, false);}}),
+  ()=>({msg:'Advance to the nearest Railway Station. Buy it if unowned, or pay double rent if owned.', fn:p=>{advanceToNearest(p,'rail');}}),
+  ()=>({msg:'Advance to the nearest Utility. Buy it if unowned, or roll and pay 10× the dice if owned.', fn:p=>{advanceToNearest(p,'util');}}),
+];
+const CHEST_CARDS = [
+  ()=>({msg:'Village people meeting cancelled — collect ₦200 blessing.', fn:p=>{changeCash(p,200);}}),
+  ()=>({msg:'School fees due. Pay ₦100.', fn:p=>{changeCash(p,-100);}}),
+  ()=>({msg:'Your Owambe contribution refunded. Collect ₦40.', fn:p=>{changeCash(p,40);}}),
+  ()=>({msg:'Doctor bills. Pay ₦60.', fn:p=>{changeCash(p,-60);}}),
+  ()=>({msg:'It is your birthday! Every player gives you ₦20.', fn:p=>{players.forEach(o=>{ if(o!==p && !o.bankrupt){changeCash(o,-20); changeCash(p,20);} });}}),
+  ()=>({msg:'Get Out of Jail Free card — keep it until needed.', fn:p=>{p.getOutOfJail++;}}),
+  ()=>({msg:'Go to Kirikiri Prison directly.', fn:p=>{sendToJail(p);}}),
+  ()=>({msg:'Land inheritance from Village. Collect ₦100.', fn:p=>{changeCash(p,100);}}),
+  ()=>({msg:'Repairs on your properties. Pay ₦40 per house, ₦115 per hotel.', fn:p=>{
+      let cost=0; p.props.forEach(i=>{ const t=TILES[i]; if(t.t==='prop'){ if(t.houses>0&&t.houses<5) cost+=40*t.houses; if(t.houses===5) cost+=115; } });
+      changeCash(p,-cost);
+    }}),
+  ()=>({msg:'Advance to GO. Collect ₦200.', fn:p=>{movePlayerTo(p,0,false); changeCash(p,200);}}),
+];
+
+/* ============================= STATE ============================= */
+let players = [];
+let currentIdx = 0;
+let doublesCount = 0;
+let turnRolled = false;
+let houseBank = 32;
+let hotelBank = 12;
+let blocking = false;
+let pendingWasDouble = false;
+let pendingBuy = null;
+let auction = null;
+let pendingTrade = null;
+const COLORS = ['#e8590c','#1e90ff','#ffd700','#2ecc71'];
+
+/* ============================= SETUP UI ============================= */
+function addPlayerRow(){
+  const rows = document.getElementById('playerRows');
+  if(rows.children.length>=4) return;
+  const idx = rows.children.length;
+  const div = document.createElement('div');
+  div.className='player-row';
+  div.innerHTML = `<div class="swatch" style="background:${COLORS[idx]}"></div>
+    <input type="text" value="Player ${idx+1}" maxlength="14">
+    <select class="tokenSelect">${TOKENS.map(tk=>`<option value="${tk}" ${tk===TOKENS[idx%TOKENS.length]?'selected':''}>${tk} ${TOKEN_NAMES[tk]}</option>`).join('')}</select>
+    <select class="typeSelect"><option value="human">Human</option><option value="cpu">Computer</option></select>`;
+  rows.appendChild(div);
+}
+function removePlayerRow(){
+  const rows = document.getElementById('playerRows');
+  if(rows.children.length>2) rows.removeChild(rows.lastElementChild);
+}
+addPlayerRow(); addPlayerRow();
+
+function startGame(){
+  const rows = [...document.querySelectorAll('.player-row')];
+  players = rows.map((r,i)=>{
+    const name = r.querySelector('input').value.trim() || `Player ${i+1}`;
+    const type = r.querySelector('.typeSelect').value;
+    const token = r.querySelector('.tokenSelect').value;
+    return { name, type, token, color: COLORS[i], cash:1500, pos:0, props:[], inJail:false, jailTurns:0, getOutOfJail:0, bankrupt:false };
+  });
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('newGameBtn').classList.remove('hidden');
+  buildBoard();
+  renderAll();
+  log('🎉 Game started! ' + players.map(p=>p.name).join(', ') + ' — good luck o!');
+  maybeAutoPlayTurn();
+}
+function confirmNewGame(){
+  if(confirm('Start a new game? Current progress will be lost.')) location.reload();
+}
+
+/* ============================= BOARD RENDER ============================= */
+function tilePos(i){
+  if(i===0) return {col:11,row:11};
+  if(i>=1&&i<=9) return {col:11-i, row:11};
+  if(i===10) return {col:1,row:11};
+  if(i>=11&&i<=19) return {col:1, row:11-(i-10)};
+  if(i===20) return {col:1,row:1};
+  if(i>=21&&i<=29) return {col:1+(i-20), row:1};
+  if(i===30) return {col:11,row:1};
+  if(i>=31&&i<=39) return {col:11, row:1+(i-30)};
+}
+const CORNER_ICON = {go:'🏁', jail:'⛓️', free:'🅿️', gotojail:'🚔'};
+function tileTypeIcon(t){
+  if(t.t==='rail') return '🚂';
+  if(t.t==='util') return t.n.includes('NEPA') ? '⚡' : '💧';
+  return '';
+}
+function buildingMarkup(t){
+  if(t.t!=='prop' || t.houses===0) return '';
+  if(t.houses===5) return `<div class="bld">${HOTEL_SVG}</div>`;
+  return `<div class="bld">${HOUSE_SVG.repeat(t.houses)}</div>`;
+}
+function buildBoard(){
+  const board = document.getElementById('board');
+  board.innerHTML='';
+  TILES.forEach((t,i)=>{
+    const pos = tilePos(i);
+    const div = document.createElement('div');
+    const isCorner = ['go','jail','free','gotojail'].includes(t.t);
+    div.className='tile'+(isCorner?' corner':'');
+    div.style.gridColumn = pos.col; div.style.gridRow = pos.row;
+    div.id = 'tile-'+i;
+    if(isCorner){
+      div.innerHTML = `<div class="corner-icon">${CORNER_ICON[t.t]}</div><div class="name">${t.n}</div>`;
+    } else {
+      let barColor = t.grp ? GROUP_COLORS[t.grp] : (t.t==='rail'?GROUP_COLORS.rail: t.t==='util'?GROUP_COLORS.util:'transparent');
+      let priceLbl = t.t==='prop'||t.t==='rail'||t.t==='util' ? `₦${t.price}` : (t.t==='tax'?`₦${t.amt}`:'');
+      div.innerHTML = `${barColor!=='transparent'?`<div class="bar" style="background:${barColor}"></div>`:''}
+        <div class="name">${t.n}</div>
+        <div class="icon">${tileTypeIcon(t)}</div>
+        ${buildingMarkup(t)}
+        <div class="price">${priceLbl}</div>`;
+    }
+    div.onclick = ()=> showTileInfo(i);
+    board.appendChild(div);
+  });
+  const center = document.createElement('div');
+  center.className='center-area';
+  center.innerHTML = `<h2>NAIJA MONOPOLY</h2><div class="sub">Wealth Wahala Edition</div>
+    <div id="dice"><div class="die-face" id="d1"></div><div class="die-face" id="d2"></div></div>
+    <div id="log"></div>`;
+  board.appendChild(center);
+  renderDie(document.getElementById('d1'), 1);
+  renderDie(document.getElementById('d2'), 1);
+}
+const PIP_PATTERNS = {1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+function renderDie(el, n){
+  if(!el || !el.appendChild) return;
+  el.innerHTML='';
+  for(let i=0;i<9;i++){
+    const d = document.createElement('span');
+    d.className='dot'+(PIP_PATTERNS[n].includes(i)?' on':'');
+    el.appendChild(d);
+  }
+}
+function animateDiceRoll(finalD1, finalD2, callback){
+  const el1 = document.getElementById('d1'), el2 = document.getElementById('d2');
+  if(!el1 || !el2){ callback(); return; }
+  el1.classList.add('rolling'); el2.classList.add('rolling');
+  sfxRoll();
+  let ticks = 0;
+  const iv = setInterval(()=>{
+    renderDie(el1, 1+Math.floor(Math.random()*6));
+    renderDie(el2, 1+Math.floor(Math.random()*6));
+    ticks++;
+    if(ticks>=6){
+      clearInterval(iv);
+      el1.classList.remove('rolling'); el2.classList.remove('rolling');
+      renderDie(el1, finalD1); renderDie(el2, finalD2);
+      sfxSettle();
+      callback();
+    }
+  }, 80);
+}
+function refreshTileVisual(i){
+  const t = TILES[i];
+  const div = document.getElementById('tile-'+i);
+  if(!div || t.t==='go'||t.t==='jail'||t.t==='free'||t.t==='gotojail') return;
+  const existingBld = div.querySelector('.bld');
+  if(existingBld) existingBld.remove();
+  div.insertAdjacentHTML('beforeend', buildingMarkup(t));
+  div.classList.toggle('mortgaged', !!t.mortgaged);
+}
+function flashTile(idx){
+  const tile = document.getElementById('tile-'+idx);
+  if(!tile) return;
+  tile.classList.remove('tile-flash'); void tile.offsetWidth;
+  tile.classList.add('tile-flash');
+  setTimeout(()=>tile.classList.remove('tile-flash'), 700);
+}
+function renderTokens(){
+  document.querySelectorAll('.token-badge').forEach(e=>e.remove());
+  players.forEach((p,idx)=>{
+    if(p.bankrupt) return;
+    const tile = document.getElementById('tile-'+p.pos);
+    if(!tile) return;
+    const tok = document.createElement('div');
+    tok.className='token-badge';
+    tok.style.background = p.color;
+    tok.textContent = p.token;
+    tok.title = p.name;
+    tok.style.left = (4+ (idx%2)*20)+'px';
+    tok.style.top = (16+ Math.floor(idx/2)*20)+'px';
+    tile.appendChild(tok);
+  });
+}
+function bounceToken(p){
+  requestAnimationFrame(()=>{
+    const tile = document.getElementById('tile-'+p.pos);
+    if(!tile) return;
+    tile.querySelectorAll('.token-badge').forEach(el=>{ if(el.title===p.name) el.classList.add('landed'); });
+  });
+}
+function markOwnership(){
+  TILES.forEach((t,i)=>{
+    if(t.t!=='prop'&&t.t!=='rail'&&t.t!=='util') return;
+    const tile = document.getElementById('tile-'+i);
+    if(!tile) return;
+    tile.style.boxShadow = t.owner ? `inset 0 0 0 3px ${t.owner.color}` : '';
+    tile.classList.toggle('mortgaged', !!t.mortgaged);
+    refreshTileVisual(i);
+  });
+}
+
+/* ============================= RENDER SIDEBAR ============================= */
+function renderAll(){
+  renderPlayers();
+  renderTokens();
+  markOwnership();
+  renderPropertiesPanel();
+}
+function renderPlayers(){
+  const panel = document.getElementById('playersPanel');
+  panel.innerHTML='';
+  players.forEach((p,i)=>{
+    const div = document.createElement('div');
+    div.className='player-card'+(i===currentIdx && !p.bankrupt?' current':'');
+    div.style.borderLeftColor = p.color;
+    div.innerHTML = `<div class="pname"><span>${p.token} ${p.name} ${p.type==='cpu'?'🤖':''} ${p.bankrupt?'💀':''}</span><span class="cash" id="cash-${i}">₦${p.cash}</span></div>
+      <div class="prop-list">${p.props.length? p.props.map(idx=>TILES[idx].n + (TILES[idx].mortgaged?' (M)':'')).join(', ') : 'No properties yet'}</div>
+      ${p.inJail?`<div style="color:#ff8a8a; font-size:11px;">In Kirikiri Prison ${p.getOutOfJail>0?'· has jail card':''}</div>`:''}`;
+    panel.appendChild(div);
+  });
+}
+function canBuildOn(t){
+  if(t.t!=='prop') return false;
+  const cp = currentPlayer();
+  if(t.owner!==cp || t.mortgaged) return false;
+  const groupTiles = TILES.filter(x=>x.grp===t.grp && x.t==='prop');
+  if(!groupTiles.every(x=>x.owner===cp)) return false;
+  if(groupTiles.some(x=>x.mortgaged)) return false;
+  const minHouses = Math.min(...groupTiles.map(x=>x.houses));
+  if(t.houses>minHouses) return false;
+  if(t.houses===5) return false;
+  if(t.houses===4 && hotelBank<=0) return false;
+  if(t.houses<4 && houseBank<=0) return false;
+  return true;
+}
+function renderPropertiesPanel(){
+  const panel = document.getElementById('buildPanel');
+  const p = currentPlayer();
+  panel.innerHTML='';
+  if(!p || p.bankrupt){ panel.innerHTML='<p class="muted">—</p>'; return; }
+  if(p.props.length===0){ panel.innerHTML='<p class="muted">No properties yet. Click a tile to view its deed.</p>'; return; }
+  const bankInfo = document.createElement('p');
+  bankInfo.className='muted';
+  bankInfo.textContent = `🏠 Houses left in bank: ${houseBank} · 🏨 Hotels left: ${hotelBank}`;
+  panel.appendChild(bankInfo);
+  p.props.forEach(i=>{
+    const t = TILES[i];
+    const row = document.createElement('div');
+    row.className='build-row';
+    let label = t.n + (t.mortgaged?' (mortgaged)':'') + (t.t==='prop'? ` — ${t.houses===5?'Hotel':'H:'+t.houses}`:'');
+    row.innerHTML = `<span>${label}</span>`;
+    if(t.t==='prop'){
+      const buildBtn = document.createElement('button');
+      buildBtn.textContent = t.houses===4?'🏨 Hotel':'🏠 Build';
+      const cost = Math.round(t.price*0.5);
+      buildBtn.disabled = !canBuildOn(t) || p.cash<cost || blocking;
+      buildBtn.title = `Cost ₦${cost}`;
+      buildBtn.onclick = ()=> buildHouse(i);
+      row.appendChild(buildBtn);
+      if(t.houses>0){
+        const sellBtn = document.createElement('button');
+        sellBtn.className='secondary';
+        sellBtn.textContent='Sell';
+        sellBtn.disabled = blocking;
+        sellBtn.onclick = ()=> sellHouseUI(i);
+        row.appendChild(sellBtn);
+      }
+    }
+    panel.appendChild(row);
+  });
+}
+
+/* ============================= LOG ============================= */
+function log(msg){
+  const l = document.getElementById('log');
+  if(!l) return;
+  const d = document.createElement('div');
+  d.textContent = msg;
+  l.prepend(d);
+  while(l.children.length>7) l.removeChild(l.lastChild);
+}
+
+/* ============================= MODALS ============================= */
+function modal(html){
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `<div class="modal-bg"><div class="modal">${html}</div></div>`;
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
+function showRules(){
+  modal(`<h3>📜 Full Rules</h3>
+    <div style="text-align:left; font-size:12px; line-height:1.7;">
+    <p><b>Setup:</b> Each player starts with ₦1,500. Pass or land on GO (BÈRÈ) to collect ₦200.</p>
+    <p><b>Buying:</b> Land on an unowned property to buy it at listed price, or decline — it then goes to <b>auction</b> among all players (including you), highest bidder wins.</p>
+    <p><b>Rent:</b> Owed automatically when you land on another player's property, unless it's mortgaged. Owning a full color group doubles unimproved rent. Railroads: ₦25/50/100/200 for 1/2/3/4 owned. Utilities: 4× dice roll for one owned, 10× for both.</p>
+    <p><b>Building:</b> Own every property in a color group (all unmortgaged) to build houses, then a hotel, evenly across the group. Limited bank supply: 32 houses, 12 hotels.</p>
+    <p><b>Mortgage:</b> Sell all houses first, then mortgage a property for half its price. Unmortgage anytime for the mortgage value plus 10% interest.</p>
+    <p><b>Trading:</b> Propose property/cash swaps with any other player anytime on your turn.</p>
+    <p><b>Taxes:</b> Import Duty Tax lets you choose flat ₦200 or 10% of your net worth. Luxury Tax is a flat ₦100.</p>
+    <p><b>Jail:</b> Enter via the "Go To Jail" tile, a card, or 3 doubles in a row. Escape by rolling doubles, paying ₦50 bail, using a Get-Out-of-Jail-Free card, or after 3 failed turns (then pay ₦50 automatically).</p>
+    <p><b>Free Parking:</b> Nothing happens — official rules, no jackpot.</p>
+    <p><b>Bankruptcy:</b> If you can't pay a debt, houses are sold and properties mortgaged automatically. If still short, you're out — last player standing wins!</p>
+    </div>
+    <div class="row"><button class="secondary" onclick="closeModal()">Close</button></div>`);
+}
+
+/* ============================= CORE HELPERS ============================= */
+function currentPlayer(){ return players[currentIdx]; }
+function computeNetWorth(p){
+  let worth = p.cash;
+  p.props.forEach(i=>{
+    const t = TILES[i];
+    worth += t.mortgaged ? Math.round(t.price*0.5) : t.price;
+    if(t.t==='prop') worth += t.houses * Math.round(t.price*0.5);
+  });
+  return worth;
+}
+function changeCash(p, amount){
+  if(!amount) return;
+  p.cash += amount;
+  sfxGain(amount);
+  animateCashChange(p, amount);
+}
+function animateCashChange(p, amount){
+  const idx = players.indexOf(p);
+  const el = document.getElementById('cash-'+idx);
+  if(!el) return;
+  el.classList.remove('flash-pos','flash-neg'); void el.offsetWidth;
+  el.classList.add(amount>0?'flash-pos':'flash-neg');
+  const rect = el.getBoundingClientRect();
+  const float = document.createElement('div');
+  float.className='cash-float';
+  float.style.left = rect.left+'px';
+  float.style.top = rect.top+'px';
+  float.style.color = amount>0? '#8fffb0':'#ff9a9a';
+  float.textContent = (amount>0?'+':'')+'₦'+amount;
+  document.body.appendChild(float);
+  setTimeout(()=>float.remove(), 1300);
+}
+
+/* ============================= TURN FLOW CONTROL ============================= */
+function continueTurnFlow(){
+  const p = currentPlayer();
+  if(p.bankrupt){ nextPlayerAuto(); return; }
+  if(pendingWasDouble){
+    pendingWasDouble = false;
+    log(`🎲 ${p.name} rolled doubles — go again!`);
+    turnRolled = false;
+    document.getElementById('rollBtn').disabled = false;
+    document.getElementById('endTurnBtn').disabled = true;
+    maybeAutoPlayTurn(true);
+  } else {
+    document.getElementById('endTurnBtn').disabled = false;
+    if(p.type==='cpu'){
+      setTimeout(()=>{ if(currentPlayer()===p && !blocking) endTurn(); }, 700);
+    }
+  }
+}
+
+/* ============================= DICE / MOVEMENT ============================= */
+function rollDice(){
+  const p = currentPlayer();
+  if(turnRolled || blocking) return;
+  if(p.inJail){ handleJailRoll(p); return; }
+  turnRolled = true;
+  document.getElementById('rollBtn').disabled = true;
+  const d1 = 1+Math.floor(Math.random()*6);
+  const d2 = 1+Math.floor(Math.random()*6);
+  animateDiceRoll(d1, d2, ()=>{
+    const isDouble = d1===d2;
+    if(isDouble) doublesCount++; else doublesCount=0;
+    if(doublesCount===3){
+      log(`🚔 ${p.name} rolled 3 doubles in a row — off to Kirikiri Prison!`);
+      sendToJail(p);
+      pendingWasDouble = false;
+      renderAll();
+      if(!blocking) continueTurnFlow();
+      return;
+    }
+    pendingWasDouble = isDouble;
+    movePlayerSteps(p, d1+d2, ()=>{
+      renderAll();
+      if(!blocking) continueTurnFlow();
+    });
+  });
+}
+function movePlayerSteps(p, steps, callback){
+  animateHop(p, steps, ()=>{
+    resolveTile(p);
+    if(callback) callback();
+  });
+}
+function animateHop(p, steps, done){
+  let remaining = steps;
+  function hop(){
+    if(remaining<=0){
+      log(`➡️ ${p.name} moved to ${TILES[p.pos].n}.`);
+      bounceToken(p);
+      done();
+      return;
+    }
+    p.pos = (p.pos+1)%40;
+    if(p.pos===0){ changeCash(p,200); log(`💰 ${p.name} passed BÈRÈ and collected ₦200.`); }
+    renderTokens();
+    remaining--;
+    setTimeout(hop, 140);
+  }
+  hop();
+}
+function movePlayerTo(p, idx, collectIfPassed){
+  const start = p.pos;
+  if(collectIfPassed && idx < start){ changeCash(p,200); log(`💰 ${p.name} passed BÈRÈ and collected ₦200.`); }
+  p.pos = idx;
+  log(`➡️ ${p.name} was sent to ${TILES[idx].n}.`);
+  renderTokens();
+  bounceToken(p);
+  flashTile(idx);
+  resolveTile(p);
+}
+function advanceToNearest(p, type){
+  let target = p.pos;
+  for(let step=1; step<=40; step++){
+    const idx = (p.pos+step)%40;
+    if(TILES[idx].t===type){ target = idx; break; }
+  }
+  const start = p.pos;
+  if(target < start){ changeCash(p,200); log(`💰 ${p.name} passed BÈRÈ and collected ₦200.`); }
+  p.pos = target;
+  const t = TILES[target];
+  log(`➡️ ${p.name} advanced to ${t.n}.`);
+  renderTokens();
+  bounceToken(p);
+  flashTile(target);
+  if(t.owner && t.owner!==p && !t.mortgaged){
+    let amt;
+    if(type==='rail'){ amt = rentForTile(t)*2; }
+    else { const d1=1+Math.floor(Math.random()*6), d2=1+Math.floor(Math.random()*6); amt=(d1+d2)*10; }
+    changeCash(p,-amt); changeCash(t.owner,amt);
+    log(`💸 ${p.name} paid ₦${amt} special rent to ${t.owner.name} for ${t.n}.`);
+    checkBankrupt(p);
+  } else if(!t.owner){
+    offerBuy(p, t);
+  }
+}
+function sendToJail(p){
+  p.pos = 10; p.inJail = true; p.jailTurns = 0;
+  renderAll();
+}
+
+/* ============================= TILE RESOLUTION ============================= */
+function resolveTile(p){
+  const t = TILES[p.pos];
+  if(t.t==='go'){ /* nothing extra */ }
+  else if(t.t==='tax'){
+    if(t.choice){ landOnIncomeTax(p); }
+    else { changeCash(p,-t.amt); log(`🧾 ${p.name} paid ₦${t.amt} luxury tax.`); }
+  }
+  else if(t.t==='gotojail'){ log(`🚔 ${p.name} is sent straight to Kirikiri Prison!`); sendToJail(p); }
+  else if(t.t==='free'){ log(`🅿️ ${p.name} rests at the Motor Park. Nothing happens (official rule).`); }
+  else if(t.t==='chance'){ drawCard(CHANCE_CARDS, p, 'Aza Chance'); }
+  else if(t.t==='chest'){ drawCard(CHEST_CARDS, p, 'Ileya Chest'); }
+  else if(t.t==='jail'){ /* just visiting */ }
+  else if(t.t==='prop' || t.t==='rail' || t.t==='util'){
+    if(t.owner===null){ offerBuy(p, t); }
+    else if(t.owner!==p && !t.mortgaged){ payRent(p, t); }
+  }
+  checkBankrupt(p);
+  renderAll();
+}
+function drawCard(deck, p, label){
+  const card = deck[Math.floor(Math.random()*deck.length)]();
+  log(`🃏 [${label}] ${p.name}: ${card.msg}`);
+  card.fn(p);
+}
+
+/* ============================= RENT ============================= */
+function rentForTile(t){
+  if(t.t==='prop'){
+    if(t.houses===0){
+      return fullGroupOwned(t) ? t.rent[0]*2 : t.rent[0];
+    }
+    return t.rent[t.houses];
+  }
+  if(t.t==='rail'){
+    const count = t.owner.props.filter(i=>TILES[i].t==='rail' && !TILES[i].mortgaged).length;
+    return 25 * Math.pow(2, Math.max(0,count-1));
+  }
+  if(t.t==='util'){
+    const count = t.owner.props.filter(i=>TILES[i].t==='util' && !TILES[i].mortgaged).length;
+    const d1=1+Math.floor(Math.random()*6), d2=1+Math.floor(Math.random()*6);
+    const diceSum = d1+d2;
+    return count===2 ? diceSum*10 : diceSum*4;
+  }
+  return 0;
+}
+function fullGroupOwned(t){
+  const group = TILES.filter(x=>x.grp===t.grp);
+  return group.every(x=>x.owner===t.owner);
+}
+function payRent(p, t){
+  const amt = rentForTile(t);
+  changeCash(p,-amt); changeCash(t.owner,amt);
+  log(`💸 ${p.name} paid ₦${amt} rent to ${t.owner.name} for ${t.n}.`);
+}
+
+/* ============================= INCOME TAX CHOICE ============================= */
+function landOnIncomeTax(p){
+  if(p.type==='cpu'){
+    const netWorth = computeNetWorth(p);
+    const amt = Math.min(200, Math.round(netWorth*0.1));
+    changeCash(p,-amt);
+    log(`🧾 ${p.name} (CPU) paid ₦${amt} income tax.`);
+    return;
+  }
+  blocking = true;
+  const netWorth = computeNetWorth(p);
+  const tenPct = Math.round(netWorth*0.1);
+  modal(`<h3>🧾 Import Duty Tax</h3><p>Pay a flat ₦200, or 10% of your net worth.</p>
+    <p class="muted">Your net worth: ₦${netWorth}</p>
+    <div class="row">
+      <button onclick="chooseTax(200)">Pay ₦200 Flat</button>
+      <button class="secondary" onclick="chooseTax(${tenPct})">Pay 10% (₦${tenPct})</button>
+    </div>`);
+}
+function chooseTax(amt){
+  const p = currentPlayer();
+  changeCash(p,-amt);
+  log(`🧾 ${p.name} paid ₦${amt} income tax.`);
+  closeModal();
+  checkBankrupt(p);
+  renderAll();
+  blocking = false;
+  continueTurnFlow();
+}
+
+/* ============================= BUY / AUCTION ============================= */
+function offerBuy(p, t){
+  blocking = true;
+  if(p.type==='cpu'){
+    if(p.cash > t.price + 150 && Math.random()<0.75){
+      buyProperty(p, t);
+      renderAll();
+      blocking = false;
+      continueTurnFlow();
+    } else {
+      log(`🤔 ${p.name} (CPU) chose not to buy ${t.n}. Auctioning to all players...`);
+      startAuction(t);
+    }
+    return;
+  }
+  pendingBuy = {p, t};
+  modal(`<h3>${t.n}</h3><p>Price: ₦${t.price}</p><p class="muted">Your cash: ₦${p.cash}</p>
+    <div class="row">
+      <button onclick="confirmBuy(true)" ${p.cash<t.price?'disabled':''}>Buy for ₦${t.price}</button>
+      <button class="secondary" onclick="confirmBuy(false)">Skip (goes to auction)</button>
+    </div>`);
+}
+function confirmBuy(yes){
+  const {p, t} = pendingBuy;
+  pendingBuy = null;
+  if(yes && p.cash>=t.price){
+    buyProperty(p, t);
+    closeModal();
+    renderAll();
+    blocking = false;
+    continueTurnFlow();
+  } else {
+    if(yes) log(`❌ ${p.name} cannot afford ${t.n}.`);
+    else log(`${p.name} skipped buying ${t.n}.`);
+    closeModal();
+    startAuction(t);
+  }
+}
+function buyProperty(p, t){
+  changeCash(p,-t.price);
+  t.owner = p;
+  p.props.push(TILES.indexOf(t));
+  sfxBuy();
+  log(`🏠 ${p.name} bought ${t.n} for ₦${t.price}.`);
+}
+
+function startAuction(t){
+  auction = {
+    tileIdx: TILES.indexOf(t),
+    stillIn: players.map((pl,i)=>i).filter(i=>!players[i].bankrupt),
+    currentBid: 0,
+    currentBidder: null,
+    turnPtr: 0
+  };
+  log(`🔨 Auction started for ${t.n}! All players may bid.`);
+  advanceAuction();
+}
+function advanceAuction(){
+  if(!auction) return;
+  if(auction.stillIn.length<=1){ finishAuction(); return; }
+  if(auction.turnPtr>=auction.stillIn.length) auction.turnPtr=0;
+  const playerIdx = auction.stillIn[auction.turnPtr];
+  const p = players[playerIdx];
+  const t = TILES[auction.tileIdx];
+  const nextBid = auction.currentBid + 10;
+  if(p.type==='cpu'){
+    setTimeout(()=>{
+      if(!auction) return;
+      const maxWilling = Math.round(t.price*(0.4+Math.random()*0.7));
+      if(nextBid<=maxWilling && nextBid<=p.cash){
+        auction.currentBid = nextBid;
+        auction.currentBidder = playerIdx;
+        playTone(350,60,'square',0.08);
+        log(`🔨 ${p.name} bids ₦${nextBid} for ${t.n}.`);
+        auction.turnPtr++;
+      } else {
+        log(`🔨 ${p.name} passes on ${t.n}.`);
+        auction.stillIn.splice(auction.turnPtr,1);
+      }
+      advanceAuction();
+    }, 500);
+  } else {
+    modal(`<h3>🔨 Auction: ${t.n}</h3>
+      <p>Current bid: ₦${auction.currentBid} ${auction.currentBidder!==null? '('+players[auction.currentBidder].name+')':'(no bids yet)'}</p>
+      <p class="muted">${p.name}, your cash: ₦${p.cash}</p>
+      <div class="row">
+        <button onclick="auctionBid()" ${nextBid>p.cash?'disabled':''}>Bid ₦${nextBid}</button>
+        <button class="secondary" onclick="auctionPass()">Pass</button>
+      </div>`);
+  }
+}
+function auctionBid(){
+  const t = TILES[auction.tileIdx];
+  const playerIdx = auction.stillIn[auction.turnPtr];
+  const nextBid = auction.currentBid + 10;
+  auction.currentBid = nextBid;
+  auction.currentBidder = playerIdx;
+  playTone(350,60,'square',0.08);
+  log(`🔨 ${players[playerIdx].name} bids ₦${nextBid} for ${t.n}.`);
+  auction.turnPtr++;
+  closeModal();
+  advanceAuction();
+}
+function auctionPass(){
+  const t = TILES[auction.tileIdx];
+  const playerIdx = auction.stillIn[auction.turnPtr];
+  log(`🔨 ${players[playerIdx].name} passes on ${t.n}.`);
+  auction.stillIn.splice(auction.turnPtr,1);
+  closeModal();
+  advanceAuction();
+}
+function finishAuction(){
+  const t = TILES[auction.tileIdx];
+  if(auction.currentBidder!==null){
+    const p = players[auction.currentBidder];
+    changeCash(p,-auction.currentBid);
+    t.owner = p;
+    p.props.push(auction.tileIdx);
+    sfxBuy();
+    log(`🔨 ${p.name} won the auction for ${t.n} at ₦${auction.currentBid}!`);
+  } else {
+    log(`🔨 No bids — ${t.n} remains unowned with the bank.`);
+  }
+  auction = null;
+  renderAll();
+  blocking = false;
+  continueTurnFlow();
+}
+
+/* ============================= DEED / MORTGAGE ============================= */
+function showTileInfo(i){
+  const t = TILES[i];
+  if(!(t.t==='prop'||t.t==='rail'||t.t==='util')) return;
+  const groupColor = t.grp ? GROUP_COLORS[t.grp] : (t.t==='rail'?'#333':'#555');
+  let rentHtml='';
+  if(t.t==='prop'){
+    rentHtml = `<table style="width:100%; font-size:12px; margin-top:8px; border-collapse:collapse; text-align:left;">
+      <tr><td>Base Rent</td><td style="text-align:right;">₦${t.rent[0]}</td></tr>
+      <tr><td>With 1 House</td><td style="text-align:right;">₦${t.rent[1]}</td></tr>
+      <tr><td>With 2 Houses</td><td style="text-align:right;">₦${t.rent[2]}</td></tr>
+      <tr><td>With 3 Houses</td><td style="text-align:right;">₦${t.rent[3]}</td></tr>
+      <tr><td>With 4 Houses</td><td style="text-align:right;">₦${t.rent[4]}</td></tr>
+      <tr><td>With Hotel</td><td style="text-align:right;">₦${t.rent[5]}</td></tr>
+    </table>`;
+  } else if(t.t==='rail'){
+    rentHtml = `<p style="font-size:12px;">Rent: ₦25 / ₦50 / ₦100 / ₦200 depending on how many stations the owner controls.</p>`;
+  } else {
+    rentHtml = `<p style="font-size:12px;">Rent: 4× dice roll (one utility owned) or 10× dice roll (both owned).</p>`;
+  }
+  let actions='';
+  const cp = currentPlayer();
+  if(t.owner===cp && !blocking){
+    if(t.mortgaged){
+      const cost = Math.round(t.price*0.55);
+      actions += `<button onclick="unmortgage(${i})" ${cp.cash<cost?'disabled':''}>Unmortgage (₦${cost})</button>`;
+    } else if(t.t!=='prop' || t.houses===0){
+      actions += `<button onclick="mortgage(${i})">Mortgage (₦${Math.round(t.price*0.5)})</button>`;
+    } else {
+      actions += `<p class="muted">Sell all houses on this property before mortgaging.</p>`;
+    }
+  }
+  modal(`<h3 style="border-bottom:4px solid ${groupColor}; padding-bottom:6px;">${t.n}</h3>
+    <p>Price: ₦${t.price} ${t.mortgaged?'<b style="color:#ff8a8a">(MORTGAGED)</b>':''}</p>
+    <p>Owner: ${t.owner? t.owner.name : 'Bank (unowned)'}</p>
+    ${t.t==='prop'?`<p>Buildings: ${t.houses===5?'🏨 Hotel':(t.houses>0?'🏠'.repeat(t.houses):'None')}</p>`:''}
+    ${rentHtml}
+    <div class="row">${actions}<button class="secondary" onclick="closeModal()">Close</button></div>`);
+}
+function mortgage(i){
+  const t = TILES[i];
+  t.mortgaged = true;
+  changeCash(t.owner, Math.round(t.price*0.5));
+  log(`🏦 ${t.owner.name} mortgaged ${t.n} for ₦${Math.round(t.price*0.5)}.`);
+  closeModal();
+  renderAll();
+}
+function unmortgage(i){
+  const t = TILES[i];
+  const cost = Math.round(t.price*0.55);
+  if(t.owner.cash>=cost){
+    changeCash(t.owner,-cost);
+    t.mortgaged = false;
+    log(`🏦 ${t.owner.name} paid off the mortgage on ${t.n} (₦${cost}).`);
+  }
+  closeModal();
+  renderAll();
+}
+
+/* ============================= BUILD / SELL HOUSES ============================= */
+function buildHouse(i){
+  const t = TILES[i];
+  if(!canBuildOn(t) || blocking) return;
+  const p = currentPlayer();
+  const cost = Math.round(t.price*0.5);
+  if(p.cash<cost) return;
+  changeCash(p,-cost);
+  if(t.houses===4){
+    houseBank += 4; hotelBank -= 1; t.houses = 5;
+    log(`🏨 ${p.name} built a Hotel on ${t.n}!`);
+  } else {
+    houseBank -= 1; t.houses += 1;
+    log(`🏠 ${p.name} built a house on ${t.n} (level ${t.houses}).`);
+  }
+  playTone(600,90,'triangle',0.12);
+  renderAll();
+}
+function sellHouseRaw(t){
+  const refund = Math.round(t.price*0.25);
+  if(t.houses===5){ houseBank -= 4; hotelBank += 1; t.houses = 4; }
+  else { houseBank += 1; t.houses -= 1; }
+  changeCash(t.owner, refund);
+  return refund;
+}
+function sellHouseUI(i){
+  const t = TILES[i];
+  if(t.houses<=0 || blocking) return;
+  const refund = sellHouseRaw(t);
+  log(`💰 ${t.owner.name} sold a building on ${t.n} for ₦${refund}.`);
+  renderAll();
+}
+
+/* ============================= JAIL ============================= */
+function handleJailRoll(p){
+  pendingWasDouble = false;
+  turnRolled = true;
+  document.getElementById('rollBtn').disabled = true;
+  const d1 = 1+Math.floor(Math.random()*6);
+  const d2 = 1+Math.floor(Math.random()*6);
+  animateDiceRoll(d1, d2, ()=>{
+    if(d1===d2){
+      log(`🔓 ${p.name} rolled doubles and escapes Kirikiri Prison!`);
+      p.inJail=false; p.jailTurns=0;
+      movePlayerSteps(p, d1+d2, ()=>{ renderAll(); if(!blocking) continueTurnFlow(); });
+    } else {
+      p.jailTurns++;
+      if(p.jailTurns>=3){
+        log(`⏰ ${p.name} served 3 turns — released, but must pay ₦50 bail now.`);
+        changeCash(p,-50); p.inJail=false; p.jailTurns=0;
+        checkBankrupt(p);
+        movePlayerSteps(p, d1+d2, ()=>{ renderAll(); if(!blocking) continueTurnFlow(); });
+      } else {
+        log(`🔒 ${p.name} stays in Kirikiri Prison (attempt ${p.jailTurns}/3).`);
+        renderAll();
+        if(!blocking) continueTurnFlow();
+      }
+    }
+  });
+}
+function payBail(){
+  const p = currentPlayer();
+  if(p.inJail && p.cash>=50 && !turnRolled){
+    changeCash(p,-50); p.inJail=false; p.jailTurns=0;
+    log(`💵 ${p.name} paid ₦50 bail and is free.`);
+    renderAll();
+    document.getElementById('payBailBtn').classList.add('hidden');
+    document.getElementById('useCardBtn').classList.add('hidden');
+  }
+}
+function useJailCard(){
+  const p = currentPlayer();
+  if(p.inJail && p.getOutOfJail>0 && !turnRolled){
+    p.getOutOfJail--; p.inJail=false; p.jailTurns=0;
+    log(`🎟️ ${p.name} used a Get Out of Jail Free card.`);
+    renderAll();
+    document.getElementById('payBailBtn').classList.add('hidden');
+    document.getElementById('useCardBtn').classList.add('hidden');
+  }
+}
+
+/* ============================= BANKRUPTCY / WIN ============================= */
+function checkBankrupt(p){
+  if(p.cash<0){
+    let propsWithHouses = p.props.filter(i=>TILES[i].t==='prop' && TILES[i].houses>0)
+      .sort((a,b)=>TILES[b].houses-TILES[a].houses);
+    for(const i of propsWithHouses){
+      while(p.cash<0 && TILES[i].houses>0){ sellHouseRaw(TILES[i]); }
+      if(p.cash>=0) break;
+    }
+    let idx = p.props.findIndex(i=>!TILES[i].mortgaged);
+    while(p.cash<0 && idx!==-1){
+      const t = TILES[p.props[idx]];
+      t.mortgaged = true;
+      changeCash(p, Math.round(t.price*0.5));
+      log(`🏦 ${p.name} mortgaged ${t.n} for ₦${Math.round(t.price*0.5)}.`);
+      idx = p.props.findIndex(i=>!TILES[i].mortgaged);
+    }
+    if(p.cash<0){
+      p.bankrupt = true;
+      sfxBankrupt();
+      log(`💀 ${p.name} is bankrupt and out of the game! All properties return to the bank.`);
+      p.props.forEach(i=>{ TILES[i].owner=null; TILES[i].houses=0; TILES[i].mortgaged=false; });
+      p.props=[];
+      checkWin();
+    }
+  }
+}
+function checkWin(){
+  const alive = players.filter(p=>!p.bankrupt);
+  if(alive.length===1){
+    setTimeout(()=>{
+      sfxWin();
+      launchConfetti();
+      modal(`<h3>🏆 ${alive[0].name} Wins!</h3><p>Congratulations — you own Naija!</p>
+        <div class="row"><button onclick="location.reload()">Play Again</button></div>`);
+    }, 300);
+  }
+}
+function launchConfetti(){
+  const holder = document.getElementById('winnerConfetti');
+  const colors = ['#008751','#ffffff','#d4a017','#e8590c','#1e90ff'];
+  for(let i=0;i<80;i++){
+    const piece = document.createElement('div');
+    piece.className='confetti-piece';
+    piece.style.left = Math.random()*100+'vw';
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDuration = (2+Math.random()*2)+'s';
+    piece.style.animationDelay = (Math.random()*0.6)+'s';
+    holder.appendChild(piece);
+    setTimeout(()=>piece.remove(), 5000);
+  }
+}
+
+/* ============================= TURN PROGRESSION ============================= */
+function endTurn(){
+  if(!turnRolled || blocking) return;
+  nextPlayerAuto();
+}
+function nextPlayerAuto(){
+  turnRolled = false;
+  doublesCount = 0;
+  document.getElementById('rollBtn').disabled = false;
+  document.getElementById('endTurnBtn').disabled = true;
+  do{
+    currentIdx = (currentIdx+1)%players.length;
+  } while(players[currentIdx].bankrupt);
+  renderAll();
+  log(`— ${players[currentIdx].name}'s turn —`);
+  maybeAutoPlayTurn();
+}
+function maybeAutoPlayTurn(){
+  const p = currentPlayer();
+  document.getElementById('payBailBtn').classList.toggle('hidden', !(p.inJail && !p.bankrupt));
+  document.getElementById('useCardBtn').classList.toggle('hidden', !(p.inJail && p.getOutOfJail>0));
+  document.getElementById('tradeBtn').classList.toggle('hidden', p.type==='cpu' || p.bankrupt);
+  if(p.type==='cpu' && !p.bankrupt){
+    setTimeout(()=>{
+      if(p.inJail){
+        if(p.getOutOfJail>0){ useJailCard(); }
+        else if(p.cash>150 && Math.random()<0.4){ payBail(); }
+      }
+      rollDice();
+    }, 700);
+  }
+}
+
+/* ============================= TRADING ============================= */
+function openTradeModal(){
+  const me = currentPlayer();
+  const others = players.filter(p=>p!==me && !p.bankrupt);
+  if(others.length===0) return;
+  renderTradeModal(players.indexOf(others[0]));
+}
+function renderTradeModal(targetIdx){
+  const me = currentPlayer();
+  const target = players[targetIdx];
+  const otherPlayers = players.filter(p=>!p.bankrupt && p!==me);
+  modal(`
+    <h3>🤝 Propose Trade</h3>
+    <div style="text-align:left; font-size:12px;">
+    <label>Trade with:
+      <select id="tradeTargetSel" onchange="renderTradeModal(+this.value)">
+        ${otherPlayers.map(p=>`<option value="${players.indexOf(p)}" ${p===target?'selected':''}>${p.name}</option>`).join('')}
+      </select>
+    </label>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+      <div style="flex:1;"><b>Your properties</b><br>${me.props.length? me.props.map(i=>`<label style="display:block;"><input type="checkbox" class="myProp" value="${i}"> ${TILES[i].n}</label>`).join(''):'<i>None</i>'}</div>
+      <div style="flex:1;"><b>${target.name}'s properties</b><br>${target.props.length? target.props.map(i=>`<label style="display:block;"><input type="checkbox" class="theirProp" value="${i}"> ${TILES[i].n}</label>`).join(''):'<i>None</i>'}</div>
+    </div>
+    <div style="margin-top:10px;">
+      Cash you add: <input id="cashFromMe" type="number" min="0" value="0" style="width:70px;">
+      &nbsp; Cash they add: <input id="cashFromThem" type="number" min="0" value="0" style="width:70px;">
+    </div>
+    </div>
+    <div class="row">
+      <button onclick="submitTrade(${targetIdx})">Send Offer</button>
+      <button class="secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+}
+function submitTrade(targetIdx){
+  const me = currentPlayer();
+  const target = players[targetIdx];
+  const myProps = [...document.querySelectorAll('.myProp:checked')].map(e=>+e.value);
+  const theirProps = [...document.querySelectorAll('.theirProp:checked')].map(e=>+e.value);
+  const cashFromMe = +document.getElementById('cashFromMe').value || 0;
+  const cashFromThem = +document.getElementById('cashFromThem').value || 0;
+  closeModal();
+  const trade = {meIdx: currentIdx, targetIdx, myProps, theirProps, cashFromMe, cashFromThem};
+  if(target.type==='cpu'){
+    const valueGivenByMe = myProps.reduce((s,i)=>s+TILES[i].price,0) + cashFromMe;
+    const valueGivenByThem = theirProps.reduce((s,i)=>s+TILES[i].price,0) + cashFromThem;
+    const ratio = valueGivenByMe===0 ? (valueGivenByThem>0?0:1) : valueGivenByThem/valueGivenByMe;
+    if(ratio>=0.85 && target.cash>=cashFromThem && me.cash>=cashFromMe){
+      executeTrade(trade);
+      log(`🤝 ${target.name} accepted the trade with ${me.name}!`);
+    } else {
+      log(`🤝 ${target.name} rejected the trade offer.`);
+    }
+  } else {
+    modal(`<h3>🤝 Trade Offer from ${me.name}</h3>
+      <p>${me.name} offers: ${myProps.map(i=>TILES[i].n).join(', ')||'nothing'} ${cashFromMe?('+ ₦'+cashFromMe):''}</p>
+      <p>In exchange for: ${theirProps.map(i=>TILES[i].n).join(', ')||'nothing'} ${cashFromThem?('+ ₦'+cashFromThem):''}</p>
+      <div class="row">
+        <button onclick="acceptTrade()">Accept</button>
+        <button class="secondary" onclick="closeModal()">Decline</button>
+      </div>`);
+    pendingTrade = trade;
+  }
+  renderAll();
+}
+function acceptTrade(){
+  executeTrade(pendingTrade);
+  pendingTrade = null;
+  closeModal();
+  renderAll();
+}
+function executeTrade(trade){
+  const me = players[trade.meIdx];
+  const target = players[trade.targetIdx];
+  trade.myProps.forEach(i=>{ me.props = me.props.filter(x=>x!==i); target.props.push(i); TILES[i].owner = target; });
+  trade.theirProps.forEach(i=>{ target.props = target.props.filter(x=>x!==i); me.props.push(i); TILES[i].owner = me; });
+  changeCash(me,-trade.cashFromMe); changeCash(target,trade.cashFromMe);
+  changeCash(target,-trade.cashFromThem); changeCash(me,trade.cashFromThem);
+  log(`🤝 Trade complete between ${me.name} and ${target.name}.`);
+  renderAll();
+}
+</script>
+</body>
+</html>
