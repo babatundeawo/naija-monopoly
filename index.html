@@ -63,14 +63,19 @@
   #startBtn{width:100%; margin-top:16px; padding:16px; font-size:18px;}
 
   .board-wrap{
-    padding:10px; border-radius:22px; flex-shrink:0;
+    padding:10px; border-radius:22px; flex-shrink:0; display:flex; flex-direction:column; gap:8px;
     background:linear-gradient(90deg,#008751 0 33.3%, #ffffff 33.3% 66.6%, #008751 66.6% 100%);
     box-shadow:0 30px 80px rgba(0,0,0,.75);
   }
   #boardViewport{
-    width:min(74vh, 58vw, 740px); height:min(74vh, 58vw, 740px);
+    width:min(70vh, calc(100vw - 700px), 700px); height:min(70vh, calc(100vw - 700px), 700px);
     overflow:hidden; position:relative; border-radius:14px; background:#0a3d24;
   }
+  #frameLog{
+    background:rgba(5,10,8,.7); border-radius:10px; padding:8px 10px; display:flex; flex-direction:column; gap:4px;
+    border:1px solid rgba(255,255,255,.08); flex-shrink:0;
+  }
+  #frameLogTitle{ color:var(--gold2); font-weight:800; font-size:11px; letter-spacing:.4px; }
   #board{
     display:grid; grid-template-columns:repeat(11,var(--tile)); grid-template-rows:repeat(11,var(--tile));
     background:#0a3d24; border:8px solid var(--gold); border-radius:14px; position:absolute; top:0; left:0;
@@ -88,8 +93,8 @@
     display:flex; flex-direction:column; transition:filter .3s ease;
   }
   .tile .bar{height:20px; width:100%; flex-shrink:0; box-shadow:inset 0 -2px 4px rgba(0,0,0,.25);}
-  .tile .name{padding:4px 5px 0; line-height:1.12; font-weight:800; color:#eafff2; font-size:12px;}
-  .tile .price{margin-top:auto; padding:3px 5px; color:#c8e6d4; font-size:11.5px; font-weight:700;}
+  .tile .name{padding:4px 5px 0; line-height:1.12; font-weight:800; color:#fff; font-size:12px; text-shadow:0 1px 3px rgba(0,0,0,.9), 0 0 6px rgba(0,0,0,.5); position:relative; z-index:2;}
+  .tile .price{margin-top:auto; padding:3px 5px; color:#e9f7ee; font-size:11.5px; font-weight:700; text-shadow:0 1px 3px rgba(0,0,0,.9); position:relative; z-index:2;}
   .tile .icon{position:absolute; top:24px; right:4px; font-size:22px; filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));}
   .tile .bld{position:absolute; bottom:16px; left:3px; display:flex; gap:2px; z-index:3;}
   .tile.corner{display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; font-weight:800; background:radial-gradient(circle at 50% 30%,#0f5a34,#0a3320); padding:6px; gap:3px;}
@@ -120,10 +125,14 @@
   @keyframes diceShake{ 0%{transform:rotate(0deg) scale(1);} 50%{transform:rotate(-14deg) scale(1.05);} 100%{transform:rotate(14deg) scale(1);} }
   .dot{border-radius:50%;}
   .dot.on{background:#1a1a1a; box-shadow:inset 0 1px 2px rgba(0,0,0,.5);}
-  #rollBtn{font-size:18px; padding:14px 30px;}
+  #rollBtn{font-size:18px; padding:14px 30px; width:100%;}
+  #rollBtn:not(:disabled){ animation: rollPulse 1.7s ease-in-out infinite; }
+  @keyframes rollPulse{ 0%,100%{ box-shadow:0 3px 0 #8a6b0f, 0 4px 10px rgba(0,0,0,.35), 0 0 0 0 rgba(212,160,23,.5);} 50%{ box-shadow:0 3px 0 #8a6b0f, 0 4px 10px rgba(0,0,0,.35), 0 0 0 10px rgba(212,160,23,0);} }
+  .build-row{ transition:background .2s ease; }
+  .build-row:hover{ background:#262e36; }
   #log{
-    width:100%; max-height:180px; overflow-y:auto; background:rgba(0,0,0,.4); border-radius:10px;
-    padding:10px; font-size:12.5px; text-align:left; color:#cfe; border:1px solid rgba(255,255,255,.08);
+    width:100%; max-height:96px; overflow-y:auto; background:rgba(0,0,0,.3); border-radius:8px;
+    padding:8px 10px; font-size:12px; text-align:left; color:#cfe;
   }
   #log div{margin-bottom:4px; animation: logIn .25s ease; line-height:1.4;}
   @keyframes logIn{ from{opacity:0; transform:translateX(-6px);} to{opacity:1; transform:translateX(0);} }
@@ -139,7 +148,8 @@
   .token-badge.landed{ animation: tokenBounce .55s ease; }
   @keyframes tokenBounce{ 0%{transform:translateY(-6px) scale(1.2);} 35%{transform:translateY(-14px) scale(1.05);} 60%{transform:translateY(0) scale(1);} 80%{transform:translateY(-5px);} 100%{transform:translateY(0);} }
 
-  #sidebar{width:340px; display:flex; flex-direction:column; gap:12px; max-height:min(74vh,740px); overflow-y:auto; flex-shrink:0; padding-right:2px;}
+  #sidebar{width:300px; display:flex; flex-direction:column; gap:12px; max-height:min(78vh,780px); overflow-y:auto; flex-shrink:0; padding-right:2px;}
+  #leftbar{width:300px; display:flex; flex-direction:column; gap:12px; max-height:min(78vh,780px); overflow-y:auto; flex-shrink:0;}
   .card{background:var(--panel); border:1px solid #2a323a; border-radius:14px; padding:14px; box-shadow:0 6px 18px rgba(0,0,0,.3);}
   .card h3{margin:0 0 10px 0; color:var(--gold); font-size:16px; font-family:'Baloo 2',sans-serif;}
   .player-card{border-radius:12px; padding:12px; margin-bottom:10px; background:var(--panel2); border-left:6px solid #666; transition:box-shadow .3s ease;}
@@ -166,6 +176,8 @@
   .modal{background:var(--panel); border:2px solid var(--gold); border-radius:16px; padding:28px; max-width:480px; text-align:center; max-height:88vh; overflow-y:auto; animation: modalIn .28s cubic-bezier(.2,1.4,.4,1); box-shadow:0 30px 80px rgba(0,0,0,.6); }
   @keyframes modalIn{ from{opacity:0; transform:scale(.9) translateY(14px);} to{opacity:1; transform:scale(1) translateY(0);} }
   .modal h3{color:var(--gold); margin-top:0; font-family:'Baloo 2',sans-serif; font-size:20px;}
+  .card-flip{ animation: cardFlip .5s cubic-bezier(.2,1.2,.4,1); transform-style:preserve-3d; }
+  @keyframes cardFlip{ 0%{transform:rotateY(90deg) scale(.8); opacity:0;} 60%{transform:rotateY(-8deg) scale(1.02); opacity:1;} 100%{transform:rotateY(0) scale(1); opacity:1;} }
   .modal .row{display:flex; gap:12px; margin-top:18px; justify-content:center; flex-wrap:wrap;}
   .hidden{display:none !important;}
   footer{text-align:center; padding:6px; color:#69766f; font-size:10px; flex-shrink:0;}
@@ -184,7 +196,8 @@
     body{ height:auto; min-height:100vh; overflow-y:auto; }
     #app{ flex-direction:column; height:auto; overflow:visible; padding:12px; }
     #boardViewport{ width:min(92vw,540px); height:min(92vw,540px); }
-    #sidebar{ width:100%; max-width:540px; }
+    #sidebar, #leftbar{ width:100%; max-width:540px; max-height:none; }
+    .board-wrap{ order:-1; }
   }
 </style>
 </head>
@@ -223,10 +236,20 @@
 </div>
 
 <div id="app" class="hidden">
+  <div id="leftbar">
+    <div class="card" id="myPropsCard">
+      <h3>🏠 My Properties</h3>
+      <div id="buildPanel"><p class="muted">Own properties to manage them here. Click any tile to view its deed.</p></div>
+    </div>
+  </div>
   <div class="board-wrap">
     <div id="boardViewport">
       <div id="board"></div>
       <div class="cam-label" id="camLabel">Following Player</div>
+    </div>
+    <div id="frameLog">
+      <div id="frameLogTitle">📜 Activity Log</div>
+      <div id="log"></div>
     </div>
   </div>
   <div id="sidebar">
@@ -244,14 +267,6 @@
         <button id="useCardBtn" onclick="useJailCard()" class="secondary hidden">🎟️ Use Jail Card</button>
         <button id="tradeBtn" class="secondary hidden" onclick="openTradeModal()">🤝 Propose Trade</button>
       </div>
-    </div>
-    <div class="card">
-      <h3>📜 Activity Log</h3>
-      <div id="log"></div>
-    </div>
-    <div class="card">
-      <h3>My Properties</h3>
-      <div id="buildPanel"><p class="muted">Own properties to manage them here. Click any tile to view its deed.</p></div>
     </div>
   </div>
 </div>
@@ -329,6 +344,7 @@ function sfxJail(){
   playNoise(200,0.08,0,400);
 }
 function sfxCard(){ playTone(660,70,'triangle',0.1); playTone(880,90,'triangle',0.1,0.07); }
+function sfxCardReveal(){ playTone(500,60,'sine',0.07); playTone(750,80,'sine',0.08,0.08); playTone(1000,120,'sine',0.09,0.16); }
 function sfxDoubles(){ [660,880,1046].forEach((f,i)=>playTone(f,120,'triangle',0.12,i*0.09)); }
 function sfxAuctionBid(){ playTone(350,60,'square',0.09); }
 function sfxHouse(){ playTone(600,90,'triangle',0.12); playTone(750,90,'triangle',0.1,0.06); }
@@ -380,6 +396,104 @@ const GROUP_COLORS = {
   red:'var(--red)', yellow:'var(--yellow)', darkblue:'var(--darkblue)', green:'#2e8b57',
   rail:'#333', util:'#555'
 };
+
+/* ============================= TILE ART (illustrated property scenes) ============================= */
+function svgToUrl(svg){ return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`; }
+function skyBg(c1,c2){ return `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="100" height="100" fill="url(#sky)"/>`; }
+function windows(x,y,w,h,cols,rows,fill){
+  let s='';
+  const cw=w/cols, ch=h/rows;
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
+    s+=`<rect x="${x+c*cw+cw*0.18}" y="${y+r*ch+ch*0.18}" width="${cw*0.64}" height="${ch*0.64}" fill="${fill}" opacity="${0.55+((r+c)%3)*0.15}"/>`;
+  }
+  return s;
+}
+const TILE_ART = {
+  brown: skyBg('#ffb877','#e8873b') + `
+    <rect x="0" y="70" width="100" height="30" fill="#7a5230"/>
+    <rect x="6" y="52" width="34" height="20" fill="#b5793f"/><polygon points="4,52 23,40 42,52" fill="#5c3a1e"/>
+    ${windows(10,58,26,10,3,1,'#ffe9a8')}
+    <rect x="46" y="46" width="30" height="26" fill="#c98a4b"/><polygon points="44,46 61,33 78,46" fill="#5c3a1e"/>
+    ${windows(50,52,22,16,2,2,'#fff3c4')}
+    <rect x="0" y="70" width="100" height="4" fill="#5c3a1e"/>
+    <circle cx="86" cy="20" r="8" fill="#ffe9a8"/>`,
+  lightblue: skyBg('#bfeaff','#7ec8e3') + `
+    <rect x="0" y="76" width="100" height="24" fill="#4c7f93"/>
+    <rect x="14" y="18" width="34" height="58" fill="#e8f6fb"/>
+    ${windows(18,24,26,46,3,7,'#3ba7d6')}
+    <rect x="54" y="34" width="28" height="42" fill="#d3ecf6"/>
+    ${windows(58,40,20,30,2,5,'#3ba7d6')}
+    <rect x="0" y="76" width="100" height="4" fill="#33566b"/>`,
+  pink: skyBg('#ffd6ec','#f39fce') + `
+    <rect x="0" y="74" width="100" height="26" fill="#7a9b5e"/>
+    <rect x="20" y="46" width="52" height="30" fill="#fff0f7"/>
+    <polygon points="14,46 46,26 78,46" fill="#c96f9b"/>
+    ${windows(28,54,16,14,2,2,'#e35b93')}
+    <rect x="52" y="54" width="14" height="20" fill="#c96f9b"/>
+    <rect x="8" y="70" width="10" height="10" fill="#5c7a44"/>
+    <circle cx="10" cy="64" r="8" fill="#7a9b5e"/>`,
+  orange: skyBg('#ffd39c','#ff8c00') + `
+    <rect x="0" y="78" width="100" height="22" fill="#8a6a3a"/>
+    <rect x="16" y="50" width="60" height="28" fill="#fff4e0"/>
+    <polygon points="10,50 46,30 82,50" fill="#a85b1f"/>
+    ${windows(22,58,20,14,2,2,'#e8590c')}
+    ${windows(50,58,20,14,2,2,'#e8590c')}
+    <rect x="42" y="62" width="12" height="16" fill="#a85b1f"/>
+    <rect x="4" y="60" width="4" height="30" fill="#3d6b2e"/><circle cx="6" cy="56" r="9" fill="#4f8a3c"/>`,
+  red: skyBg('#ffc4b0','#d7263d') + `
+    <rect x="0" y="72" width="100" height="28" fill="#4a1218"/>
+    <rect x="10" y="40" width="80" height="34" fill="#e2725a"/>
+    <rect x="10" y="40" width="80" height="6" fill="#7f0f1e"/>
+    ${windows(16,50,20,18,2,2,'#ffe3b0')}
+    ${windows(42,50,20,18,2,2,'#ffe3b0')}
+    ${windows(68,50,16,18,2,2,'#ffe3b0')}
+    <circle cx="50" cy="30" r="10" fill="#f4c20d" opacity=".85"/>`,
+  yellow: skyBg('#fff3b0','#f4c20d') + `
+    <rect x="0" y="76" width="100" height="24" fill="#5b4a10"/>
+    <rect x="12" y="48" width="76" height="30" fill="#fffbe6"/>
+    <rect x="12" y="48" width="76" height="8" fill="#e8590c"/>
+    ${windows(18,60,22,14,2,2,'#f4c20d')}
+    ${windows(58,60,22,14,2,2,'#f4c20d')}
+    <rect x="44" y="62" width="12" height="16" fill="#8a6b0f"/>`,
+  green: skyBg('#c8f5da','#2e8b57') + `
+    <rect x="0" y="80" width="100" height="20" fill="#0a3320"/>
+    <rect x="18" y="14" width="26" height="66" fill="#eafff2"/>
+    ${windows(21,18,20,58,2,10,'#2e8b57')}
+    <rect x="52" y="30" width="30" height="50" fill="#d7f5e4"/>
+    ${windows(55,34,24,42,3,7,'#1f6b41')}
+    <rect x="28" y="6" width="2" height="12" fill="#555"/><polygon points="30,6 30,12 40,9" fill="#d4a017"/>`,
+  darkblue: skyBg('#dbe8ff','#1b4f8c') + `
+    <rect x="0" y="82" width="100" height="18" fill="#0c2646"/>
+    <rect x="30" y="8" width="28" height="74" fill="#e7f0ff"/>
+    ${windows(33,12,22,66,3,11,'#1b4f8c')}
+    <rect x="10" y="46" width="18" height="36" fill="#cfe0f5"/>
+    <rect x="62" y="34" width="20" height="48" fill="#cfe0f5"/>
+    ${windows(65,38,14,40,2,6,'#1b4f8c')}
+    <polygon points="42,2 46,8 38,8" fill="#d4a017"/>`,
+  rail: skyBg('#dfe3e6','#8a94a0') + `
+    <rect x="0" y="70" width="100" height="30" fill="#3a3f45"/>
+    <rect x="0" y="86" width="100" height="4" fill="#111"/>
+    <rect x="4" y="88" width="8" height="3" fill="#555"/><rect x="20" y="88" width="8" height="3" fill="#555"/>
+    <rect x="36" y="88" width="8" height="3" fill="#555"/><rect x="52" y="88" width="8" height="3" fill="#555"/>
+    <rect x="68" y="88" width="8" height="3" fill="#555"/><rect x="84" y="88" width="8" height="3" fill="#555"/>
+    <rect x="18" y="42" width="46" height="28" rx="4" fill="#c0392b"/>
+    <rect x="22" y="48" width="10" height="10" fill="#fdf6e3"/><rect x="36" y="48" width="10" height="10" fill="#fdf6e3"/>
+    <circle cx="28" cy="72" r="5" fill="#222"/><circle cx="54" cy="72" r="5" fill="#222"/>
+    <rect x="64" y="52" width="8" height="18" fill="#c0392b"/>`,
+  util: skyBg('#eef2f5','#b7c2cc') + `
+    <rect x="0" y="78" width="100" height="22" fill="#4a545c"/>
+    <polygon points="50,10 30,54 44,54 34,90 70,44 54,44 62,10" fill="#f4c20d"/>
+    <rect x="10" y="60" width="10" height="30" fill="#7d8790"/>
+    <rect x="80" y="55" width="10" height="35" fill="#7d8790"/>`
+};
+function tileArtStyle(t){
+  const key = t.grp ? t.grp : t.t;
+  const art = TILE_ART[key];
+  if(!art) return '';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${art}</svg>`;
+  return `background:linear-gradient(to bottom, rgba(8,18,14,.18) 0%, rgba(6,14,11,.6) 58%, rgba(4,9,7,.94) 100%), ${svgToUrl(svg)}; background-size:cover; background-position:center;`;
+}
+
 function buildRent(price){
   const base = Math.round(price*0.08);
   return [base, base*5, base*15, base*30, base*45, base*60];
@@ -473,6 +587,8 @@ let pendingWasDouble = false;
 let pendingBuy = null;
 let auction = null;
 let pendingTrade = null;
+let pendingCard = null;
+let turnEpoch = 0;
 const COLORS = ['#e8590c','#1e90ff','#ffd700','#2ecc71'];
 
 /* ============================= SETUP UI ============================= */
@@ -560,6 +676,8 @@ function buildBoard(){
     } else {
       let barColor = t.grp ? GROUP_COLORS[t.grp] : (t.t==='rail'?GROUP_COLORS.rail: t.t==='util'?GROUP_COLORS.util:'transparent');
       let priceLbl = t.t==='prop'||t.t==='rail'||t.t==='util' ? `₦${t.price}` : (t.t==='tax'?`₦${t.amt}`:'');
+      const artStyle = tileArtStyle(t);
+      if(artStyle) div.style.cssText += artStyle;
       div.innerHTML = `${barColor!=='transparent'?`<div class="bar" style="background:${barColor}"></div>`:''}
         <div class="name">${t.n}</div>
         <div class="icon">${tileTypeIcon(t)}</div>
@@ -771,10 +889,21 @@ function canBuildOn(t){
 }
 function renderPropertiesPanel(){
   const panel = document.getElementById('buildPanel');
-  const p = currentPlayer();
+  const p = players[0]; // "My Properties" always reflects Player 1
+  const card = document.getElementById('myPropsCard');
+  if(card){
+    const h3 = card.querySelector('h3');
+    if(h3 && p) h3.innerHTML = `🏠 ${p.name}'s Properties`;
+  }
   panel.innerHTML='';
   if(!p || p.bankrupt){ panel.innerHTML='<p class="muted">—</p>'; return; }
   if(p.props.length===0){ panel.innerHTML='<p class="muted">No properties yet. Click a tile to view its deed.</p>'; return; }
+  if(currentPlayer()!==p){
+    const note = document.createElement('p');
+    note.className='muted';
+    note.textContent = `⏳ Waiting for your turn to build...`;
+    panel.appendChild(note);
+  }
   const bankInfo = document.createElement('p');
   bankInfo.className='muted';
   bankInfo.textContent = `🏠 Houses left in bank: ${houseBank} · 🏨 Hotels left: ${hotelBank}`;
@@ -878,6 +1007,7 @@ function animateCashChange(p, amount){
 
 /* ============================= TURN FLOW CONTROL ============================= */
 function continueTurnFlow(){
+  turnEpoch++;
   const p = currentPlayer();
   if(p.bankrupt){ nextPlayerAuto(); return; }
   if(pendingWasDouble){
@@ -1018,7 +1148,41 @@ function drawCard(deck, p, label){
   sfxCard();
   const card = deck[Math.floor(Math.random()*deck.length)]();
   log(`🃏 [${label}] ${p.name}: ${card.msg}`);
+  blocking = true;
+  pendingCard = {card, p};
+  const isChance = label.includes('Chance');
+  const emoji = isChance ? '🎴' : '🎁';
+  const accent = isChance ? 'var(--gold)' : '#2e8b57';
+  modal(`
+    <div class="card-flip">
+      <h3 style="border-bottom:3px solid ${accent}; padding-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <span style="font-size:26px;">${emoji}</span> ${label}
+      </h3>
+      <p style="font-size:16px; line-height:1.7; margin:16px 4px; color:#fff;">${card.msg}</p>
+      <p class="muted" style="margin-top:-6px;">Drawn by ${p.token} ${p.name}</p>
+    </div>
+    <div class="row">
+      <button onclick="resolveCard()" ${p.type==='cpu'?'class="hidden"':''}>👍 Continue</button>
+      ${p.type==='cpu' ? '<p class="muted">🤖 CPU is reading the card…</p>' : ''}
+    </div>`);
+  sfxCardReveal();
+  if(p.type==='cpu'){
+    setTimeout(()=>{ if(pendingCard) resolveCard(); }, 1700);
+  }
+}
+function resolveCard(){
+  if(!pendingCard) return;
+  const {card, p} = pendingCard;
+  pendingCard = null;
+  closeModal();
+  const epochBefore = turnEpoch;
+  blocking = false;
   card.fn(p);
+  checkBankrupt(p);
+  renderAll();
+  if(!blocking && turnEpoch===epochBefore){
+    continueTurnFlow();
+  }
 }
 
 /* ============================= RENT ============================= */
