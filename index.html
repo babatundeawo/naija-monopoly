@@ -17,27 +17,30 @@
     --tile: 104px; --tile-sm: 40px;
   }
   *{box-sizing:border-box;}
+  html,body{height:100%;}
   body{
     margin:0; font-family:'Nunito','Segoe UI',Tahoma,Arial,sans-serif;
     background:
       repeating-linear-gradient(45deg, rgba(255,255,255,.02) 0 2px, transparent 2px 40px),
       radial-gradient(circle at 20% 10%,#0e2e1f,#05070a 60%);
-    color:var(--text); min-height:100vh;
+    color:var(--text); height:100vh; overflow:hidden; display:flex; flex-direction:column;
   }
   header{
-    padding:16px 26px; display:flex; align-items:center; justify-content:space-between;
+    padding:10px 22px; display:flex; align-items:center; justify-content:space-between;
     background:linear-gradient(90deg,var(--green),#026b3d); border-bottom:5px solid var(--gold);
-    flex-wrap:wrap; gap:10px; box-shadow:0 4px 18px rgba(0,0,0,.4);
+    flex-wrap:wrap; gap:10px; box-shadow:0 4px 18px rgba(0,0,0,.4); flex-shrink:0;
   }
-  header h1{margin:0; font-family:'Baloo 2',sans-serif; font-size:28px; letter-spacing:.5px; text-shadow:0 2px 8px rgba(0,0,0,.4);}
+  header h1{margin:0; font-family:'Baloo 2',sans-serif; font-size:22px; letter-spacing:.5px; text-shadow:0 2px 8px rgba(0,0,0,.4);}
   header h1 span{color:var(--gold2);}
-  header .tag{font-size:13px; color:#d8f5e6; margin-top:2px;}
-  .header-actions{display:flex; gap:10px; align-items:center;}
-  .header-actions button{padding:10px 14px; font-size:14px;}
-  #app{display:flex; gap:20px; padding:20px; align-items:flex-start; flex-wrap:wrap; justify-content:center;}
+  header .tag{font-size:12px; color:#d8f5e6; margin-top:2px;}
+  .header-actions{display:flex; gap:8px; align-items:center;}
+  .header-actions button{padding:8px 12px; font-size:13px;}
+  #app{display:flex; gap:18px; padding:14px; align-items:center; justify-content:center; flex:1; min-height:0; overflow:hidden;}
+  #app.hidden{display:none !important;}
 
   #setup{
-    max-width:640px; margin:40px auto; background:var(--panel); border:1px solid #2a323a;
+    max-width:640px; margin:20px auto; background:var(--panel); border:1px solid #2a323a;
+    max-height:calc(100vh - 120px); overflow-y:auto;
     border-radius:16px; padding:30px; box-shadow:0 10px 40px rgba(0,0,0,.5);
   }
   #setup h2{margin-top:0; color:var(--gold); font-family:'Baloo 2',sans-serif; font-size:24px;}
@@ -60,14 +63,25 @@
   #startBtn{width:100%; margin-top:16px; padding:16px; font-size:18px;}
 
   .board-wrap{
-    padding:14px; border-radius:22px;
+    padding:10px; border-radius:22px; flex-shrink:0;
     background:linear-gradient(90deg,#008751 0 33.3%, #ffffff 33.3% 66.6%, #008751 66.6% 100%);
     box-shadow:0 30px 80px rgba(0,0,0,.75);
   }
+  #boardViewport{
+    width:min(74vh, 58vw, 740px); height:min(74vh, 58vw, 740px);
+    overflow:hidden; position:relative; border-radius:14px; background:#0a3d24;
+  }
   #board{
     display:grid; grid-template-columns:repeat(11,var(--tile)); grid-template-rows:repeat(11,var(--tile));
-    background:#0a3d24; border:8px solid var(--gold); border-radius:14px; position:relative;
+    background:#0a3d24; border:8px solid var(--gold); border-radius:14px; position:absolute; top:0; left:0;
     box-shadow: inset 0 0 40px rgba(0,0,0,.5);
+    transform-origin:0 0; transition: transform .4s cubic-bezier(.4,0,.2,1);
+  }
+  .cam-label{
+    position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:30;
+    background:rgba(0,0,0,.55); backdrop-filter:blur(3px); color:var(--gold2); font-weight:800;
+    font-size:12px; padding:5px 14px; border-radius:20px; border:1px solid rgba(255,215,94,.4);
+    pointer-events:none; transition:opacity .3s ease; letter-spacing:.3px;
   }
   .tile{
     border:1px solid #14311f; position:relative; background:linear-gradient(160deg,#0f5230,#0a3d24); font-size:13px; overflow:hidden;
@@ -92,14 +106,14 @@
   .owner-ribbon .otok{font-size:12px;}
   .center-area{
     grid-column:2/11; grid-row:2/11; display:flex; flex-direction:column; align-items:center;
-    justify-content:center; gap:14px; padding:14px; text-align:center;
+    justify-content:center; gap:6px; padding:14px; text-align:center; pointer-events:none;
   }
-  .center-area h2{margin:0; font-family:'Baloo 2',sans-serif; font-size:38px; color:var(--gold); text-shadow:0 3px 10px #000; letter-spacing:1px;}
-  .center-area .sub{color:#bfe9d3; font-size:14px; margin-bottom:4px; font-weight:700;}
-  #dice{display:flex; gap:16px;}
+  .center-area h2{margin:0; font-family:'Baloo 2',sans-serif; font-size:34px; line-height:1.05; color:var(--gold); text-shadow:0 3px 10px #000; letter-spacing:1px; opacity:.9;}
+  .center-area .sub{color:#bfe9d3; font-size:13px; margin-bottom:0; font-weight:700; opacity:.85;}
+  #dice{display:flex; gap:14px; justify-content:center; margin-bottom:10px;}
   .die-face{
-    width:62px; height:62px; background:linear-gradient(160deg,#fff,#e9e9e9); border-radius:12px; display:grid;
-    grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); padding:9px;
+    width:52px; height:52px; background:linear-gradient(160deg,#fff,#e9e9e9); border-radius:12px; display:grid;
+    grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); padding:8px;
     box-shadow:0 6px 14px rgba(0,0,0,.55), inset 0 -3px 4px rgba(0,0,0,.1); gap:2px;
   }
   .die-face.rolling{ animation: diceShake .12s linear infinite; }
@@ -108,7 +122,7 @@
   .dot.on{background:#1a1a1a; box-shadow:inset 0 1px 2px rgba(0,0,0,.5);}
   #rollBtn{font-size:18px; padding:14px 30px;}
   #log{
-    width:320px; max-height:150px; overflow-y:auto; background:rgba(0,0,0,.4); border-radius:10px;
+    width:100%; max-height:180px; overflow-y:auto; background:rgba(0,0,0,.4); border-radius:10px;
     padding:10px; font-size:12.5px; text-align:left; color:#cfe; border:1px solid rgba(255,255,255,.08);
   }
   #log div{margin-bottom:4px; animation: logIn .25s ease; line-height:1.4;}
@@ -125,7 +139,7 @@
   .token-badge.landed{ animation: tokenBounce .55s ease; }
   @keyframes tokenBounce{ 0%{transform:translateY(-6px) scale(1.2);} 35%{transform:translateY(-14px) scale(1.05);} 60%{transform:translateY(0) scale(1);} 80%{transform:translateY(-5px);} 100%{transform:translateY(0);} }
 
-  #sidebar{width:340px; display:flex; flex-direction:column; gap:14px;}
+  #sidebar{width:340px; display:flex; flex-direction:column; gap:12px; max-height:min(74vh,740px); overflow-y:auto; flex-shrink:0; padding-right:2px;}
   .card{background:var(--panel); border:1px solid #2a323a; border-radius:14px; padding:14px; box-shadow:0 6px 18px rgba(0,0,0,.3);}
   .card h3{margin:0 0 10px 0; color:var(--gold); font-size:16px; font-family:'Baloo 2',sans-serif;}
   .player-card{border-radius:12px; padding:12px; margin-bottom:10px; background:var(--panel2); border-left:6px solid #666; transition:box-shadow .3s ease;}
@@ -154,7 +168,7 @@
   .modal h3{color:var(--gold); margin-top:0; font-family:'Baloo 2',sans-serif; font-size:20px;}
   .modal .row{display:flex; gap:12px; margin-top:18px; justify-content:center; flex-wrap:wrap;}
   .hidden{display:none !important;}
-  footer{text-align:center; padding:16px; color:#69766f; font-size:12px;}
+  footer{text-align:center; padding:6px; color:#69766f; font-size:10px; flex-shrink:0;}
   #buildPanel{display:flex; flex-direction:column; gap:7px; max-height:230px; overflow-y:auto;}
   .build-row{display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--panel2); padding:8px 10px; border-radius:8px; font-size:12.5px;}
   .build-row button{padding:6px 10px; font-size:12px; white-space:nowrap;}
@@ -166,23 +180,11 @@
   @keyframes confettiFall{ to{transform:translateY(110vh) rotate(540deg); opacity:.2;} }
   .jail-shake{ animation: jailShake .5s ease; }
   @keyframes jailShake{ 0%,100%{transform:translateX(0);} 20%{transform:translateX(-6px);} 40%{transform:translateX(6px);} 60%{transform:translateX(-4px);} 80%{transform:translateX(4px);} }
-  @media (max-width:1180px){
-    :root{ --tile: 58px; }
-    .tile{font-size:8px;} .tile .name{font-size:7px; padding:2px 3px 0;} .tile .price{font-size:7px;}
-    .tile .bar{height:12px;} .token-badge{width:22px;height:22px; font-size:13px;}
-    .tile .icon{font-size:14px; top:14px;} .tile .bld svg{width:9px!important; height:9px!important;}
-    .owner-ribbon{height:11px; font-size:7px;} .owner-ribbon .otok{font-size:8px;}
-    .center-area h2{font-size:20px;} .die-face{width:38px;height:38px;padding:5px;}
-    .tile.corner .corner-icon{font-size:18px;} .tile.corner{font-size:7px;}
-    #sidebar{width:100%; max-width:420px;}
-  }
-  @media (max-width:640px){
-    :root{ --tile: 30px; }
-    .tile{font-size:5px;} .tile .name{font-size:4.2px;} .tile .price{font-size:0; display:none;}
-    .tile .bar{height:7px;} .token-badge{width:13px;height:13px; font-size:8px; border-width:2px;}
-    .tile .icon{font-size:8px; top:8px;} .owner-ribbon{height:6px; font-size:0;}
-    .center-area h2{font-size:12px;} .die-face{width:26px;height:26px;padding:3px;}
-    .tile.corner .corner-icon{font-size:11px;}
+  @media (max-width:980px), (max-height:640px){
+    body{ height:auto; min-height:100vh; overflow-y:auto; }
+    #app{ flex-direction:column; height:auto; overflow:visible; padding:12px; }
+    #boardViewport{ width:min(92vw,540px); height:min(92vw,540px); }
+    #sidebar{ width:100%; max-width:540px; }
   }
 </style>
 </head>
@@ -194,6 +196,7 @@
     <div class="tag">Full official rules · Build your empire from Yaba to Banana Island</div>
   </div>
   <div class="header-actions">
+    <button class="secondary" id="camToggleBtn" onclick="toggleCamMode()">🗺️ Full Board</button>
     <button class="secondary" onclick="showRules()">📜 Rules</button>
     <button class="secondary" id="muteBtn" onclick="toggleMute()">🔊</button>
     <button class="secondary hidden" id="newGameBtn" onclick="confirmNewGame()">🔄 New Game</button>
@@ -221,7 +224,10 @@
 
 <div id="app" class="hidden">
   <div class="board-wrap">
-    <div id="board"></div>
+    <div id="boardViewport">
+      <div id="board"></div>
+      <div class="cam-label" id="camLabel">Following Player</div>
+    </div>
   </div>
   <div id="sidebar">
     <div class="card">
@@ -229,7 +235,8 @@
       <div id="playersPanel"></div>
     </div>
     <div class="card">
-      <h3>Actions</h3>
+      <h3>🎲 Dice &amp; Actions</h3>
+      <div id="dice"><div class="die-face" id="d1"></div><div class="die-face" id="d2"></div></div>
       <div id="actions">
         <button id="rollBtn" onclick="rollDice()">🎲 Roll Dice</button>
         <button id="endTurnBtn" onclick="endTurn()" disabled>➡ End Turn</button>
@@ -237,6 +244,10 @@
         <button id="useCardBtn" onclick="useJailCard()" class="secondary hidden">🎟️ Use Jail Card</button>
         <button id="tradeBtn" class="secondary hidden" onclick="openTradeModal()">🤝 Propose Trade</button>
       </div>
+    </div>
+    <div class="card">
+      <h3>📜 Activity Log</h3>
+      <div id="log"></div>
     </div>
     <div class="card">
       <h3>My Properties</h3>
@@ -496,6 +507,9 @@ function startGame(){
   document.getElementById('newGameBtn').classList.remove('hidden');
   buildBoard();
   renderAll();
+  updateCamera(true);
+  renderDie(document.getElementById('d1'), 1);
+  renderDie(document.getElementById('d2'), 1);
   log('🎉 Game started! ' + players.map(p=>p.name).join(', ') + ' — good luck o!');
   maybeAutoPlayTurn();
 }
@@ -558,12 +572,8 @@ function buildBoard(){
   });
   const center = document.createElement('div');
   center.className='center-area';
-  center.innerHTML = `<h2>NAIJA MONOPOLY</h2><div class="sub">Wealth Wahala Edition</div>
-    <div id="dice"><div class="die-face" id="d1"></div><div class="die-face" id="d2"></div></div>
-    <div id="log"></div>`;
+  center.innerHTML = `<h2>NAIJA<br>MONOPOLY</h2><div class="sub">Wealth Wahala Edition</div>`;
   board.appendChild(center);
-  renderDie(document.getElementById('d1'), 1);
-  renderDie(document.getElementById('d2'), 1);
 }
 const PIP_PATTERNS = {1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
 function renderDie(el, n){
@@ -623,7 +633,7 @@ function tokenTargetXY(p, idx){
   const board = document.getElementById('board');
   const tile = document.getElementById('tile-'+p.pos);
   if(!board || !tile) return {x:0,y:0};
-  const tokSize = tile.offsetWidth < 40 ? 14 : 34;
+  const tokSize = 34;
   const [ox,oy] = tokenOffset(idx);
   const cx = tile.offsetLeft + tile.offsetWidth/2 - tokSize/2 + ox*(tile.offsetWidth/68);
   const cy = tile.offsetTop + tile.offsetHeight/2 - tokSize/2 + oy*(tile.offsetWidth/68);
@@ -666,6 +676,53 @@ function bounceToken(p){
   el.classList.add('landed');
   setTimeout(()=>el.classList.remove('landed'), 600);
 }
+
+/* ============================= DYNAMIC CAMERA (follow-player zoom) ============================= */
+let camMode = 'auto'; // 'auto' follows current player, 'full' pins the whole board
+function isModalOpen(){ return !!document.querySelector('.modal-bg'); }
+function toggleCamMode(){
+  camMode = (camMode==='full') ? 'auto' : 'full';
+  const btn = document.getElementById('camToggleBtn');
+  if(btn) btn.textContent = camMode==='full' ? '🔎 Follow Player' : '🗺️ Full Board';
+  updateCamera();
+}
+function updateCamera(immediate){
+  const viewport = document.getElementById('boardViewport');
+  const board = document.getElementById('board');
+  const label = document.getElementById('camLabel');
+  if(!viewport || !board || document.getElementById('app').classList.contains('hidden')) return;
+  const vw = viewport.clientWidth, vh = viewport.clientHeight;
+  const bw = board.offsetWidth, bh = board.offsetHeight;
+  if(!vw || !bw) return;
+  const fitScale = Math.min(vw/bw, vh/bh);
+  const showFull = camMode==='full' || isModalOpen() || !players.length;
+  let scale, tx, ty, labelText;
+  if(showFull){
+    scale = fitScale;
+    tx = (vw - bw*scale)/2;
+    ty = (vh - bh*scale)/2;
+    labelText = isModalOpen() ? '' : '🗺️ Full Board';
+  } else {
+    const p = currentPlayer();
+    const tile = document.getElementById('tile-'+(p?p.pos:0));
+    const tileNatural = bw/11;
+    scale = Math.min(Math.max((vw/4.3)/tileNatural, fitScale*1.15), fitScale*4.2);
+    const Lx = tile ? tile.offsetLeft + tile.offsetWidth/2 : bw/2;
+    const Ly = tile ? tile.offsetTop + tile.offsetHeight/2 : bh/2;
+    tx = vw/2 - Lx*scale;
+    ty = vh/2 - Ly*scale;
+    tx = Math.min(0, Math.max(tx, vw - bw*scale));
+    ty = Math.min(0, Math.max(ty, vh - bh*scale));
+    labelText = p ? `${p.type==='cpu'?'🤖':'🎯'} Following ${p.name}` : '';
+  }
+  board.style.transition = immediate ? 'none' : 'transform .4s cubic-bezier(.4,0,.2,1)';
+  board.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+  if(label){ label.textContent = labelText; label.style.opacity = labelText ? '1' : '0'; }
+}
+window.addEventListener('resize', ()=>{
+  clearTimeout(window._camResizeT);
+  window._camResizeT = setTimeout(()=>updateCamera(true), 120);
+});
 function markOwnership(){
   TILES.forEach((t,i)=>{
     if(t.t!=='prop'&&t.t!=='rail'&&t.t!=='util') return;
@@ -683,6 +740,7 @@ function renderAll(){
   renderTokens();
   markOwnership();
   renderPropertiesPanel();
+  updateCamera();
 }
 function renderPlayers(){
   const panel = document.getElementById('playersPanel');
@@ -762,8 +820,9 @@ function log(msg){
 function modal(html){
   const root = document.getElementById('modalRoot');
   root.innerHTML = `<div class="modal-bg"><div class="modal">${html}</div></div>`;
+  updateCamera();
 }
-function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; updateCamera(); }
 function showRules(){
   modal(`<h3>📜 Full Rules</h3>
     <div style="text-align:left; font-size:12px; line-height:1.7;">
@@ -886,6 +945,7 @@ function animateHop(p, steps, done){
     if(el){ el.classList.remove('hopping'); void el.offsetWidth; el.classList.add('hopping'); }
     playTone(360+Math.random()*60,50,'square',0.05);
     renderTokens();
+    updateCamera();
     remaining--;
     setTimeout(hop, 300);
   }
