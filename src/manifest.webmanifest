@@ -1,0 +1,17 @@
+{
+  "name": "Naija Monopoly — Wealth Wahala Edition",
+  "short_name": "Naija Monopoly",
+  "description": "A Nigerian-themed Monopoly game with the full official rules.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#060e09",
+  "theme_color": "#008751",
+  "lang": "en-NG",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

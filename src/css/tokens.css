@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Design tokens — the single place to change colours, type, spacing and motion.
+   Every colour is written as light-dark(<light>, <dark>) so one value covers both themes.
+   ========================================================================== */
+:root{
+  color-scheme: light dark;               /* follows the visitor's system by default */
+
+  /* Brand */
+  --green:        light-dark(#008751, #1fc27f);   /* primary: Nigerian flag green */
+  --green-strong: light-dark(#006b40, #4ddc9d);
+  --on-green:     light-dark(#ffffff, #03140b);
+  --gold:         light-dark(#b8860b, #e8b93e);   /* accent: gold, used as text/lines */
+  --gold-fill:    #e8b93e;                        /* accent fill (same in both themes) */
+  --on-gold:      #231a02;
+
+  /* Neutral scale */
+  --bg:           light-dark(#f6f4ec, #060e09);
+  --bg-raised:    light-dark(#fbfaf5, #0a1510);
+  --surface:      light-dark(#ffffff, #0e1a13);
+  --surface-2:    light-dark(#efece1, #14241b);
+  --surface-3:    light-dark(#e6e2d4, #1b3025);
+  --border:       light-dark(#dcd7c6, #213a2b);
+  --border-strong:light-dark(#bdb7a3, #35553f);
+  --text:         light-dark(#0e1a13, #eef5f0);
+  --text-muted:   light-dark(#4d5a52, #9bb0a3);
+  --text-faint:   light-dark(#6f7b73, #7a9183);
+
+  /* Semantic */
+  --success: light-dark(#13804a, #3ad98c);
+  --warning: light-dark(#a15c00, #f2b64a);
+  --error:   light-dark(#c4162f, #ff6b7d);
+  --info:    light-dark(#1d6cc2, #6db0ff);
+
+  /* Legacy names used by game templates */
+  --muted: var(--text-muted);
+
+  /* Typography */
+  --font-display: "Bricolage Grotesque", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Plus Jakarta Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --fs-xs:  clamp(0.75rem, 0.73rem + 0.1vw, 0.8125rem);
+  --fs-sm:  clamp(0.8125rem, 0.79rem + 0.12vw, 0.9rem);
+  --fs-md:  clamp(0.9375rem, 0.91rem + 0.15vw, 1.0625rem);
+  --fs-lg:  clamp(1.125rem, 1.05rem + 0.4vw, 1.375rem);
+  --fs-xl:  clamp(1.5rem, 1.25rem + 1.2vw, 2.25rem);
+  --fs-2xl: clamp(2rem, 1.4rem + 2.6vw, 3.5rem);
+  --fs-hero:clamp(2.5rem, 1.6rem + 4.2vw, 4.5rem);
+  --lh-tight: 1.04;
+  --lh-snug: 1.25;
+  --lh-body: 1.65;
+  --track-tight: -0.035em;
+
+  /* Spacing (4px base) */
+  --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem; --s-5: 1.5rem;
+  --s-6: 2rem; --s-7: 3rem; --s-8: 4.5rem; --s-9: 7rem;
+
+  /* Shape */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+  --bw: 1px;
+
+  /* Elevation */
+  --shadow-1: 0 1px 2px light-dark(rgba(14,26,19,.06), rgba(0,0,0,.4)), 0 1px 1px light-dark(rgba(14,26,19,.04), rgba(0,0,0,.3));
+  --shadow-2: 0 8px 24px -8px light-dark(rgba(14,26,19,.16), rgba(0,0,0,.6)), 0 2px 6px light-dark(rgba(14,26,19,.06), rgba(0,0,0,.4));
+  --shadow-3: 0 30px 60px -20px light-dark(rgba(14,26,19,.28), rgba(0,0,0,.75));
+  --glow: 0 0 0 1px light-dark(rgba(0,135,81,.25), rgba(31,194,127,.3)), 0 12px 40px -12px light-dark(rgba(0,135,81,.35), rgba(31,194,127,.35));
+  --focus: 0 0 0 3px light-dark(#ffffff, #060e09), 0 0 0 5px light-dark(#006b40, #4ddc9d);
+
+  /* Layers */
+  --z-board: 1; --z-header: 50; --z-progress: 60; --z-float: 300; --z-modal: 500; --z-confetti: 600;
+
+  /* Motion */
+  --dur-1: 120ms; --dur-2: 240ms; --dur-3: 520ms; --dur-4: 800ms;
+  --ease-out: cubic-bezier(.2,.8,.2,1);
+  --ease-spring: cubic-bezier(.34,1.4,.5,1);
+
+  /* Layout */
+  --container: 1200px;
+  --header-h: 68px;
+}
+:root[data-theme="light"]{ color-scheme: light; }
+:root[data-theme="dark"]{ color-scheme: dark; }
+
+/* Board palette: the board is the artwork, so it looks the same in both themes. */
+:root{
+  --brown:#8b5a2b; --lightblue:#7ec8e3; --pink:#e91e8c; --orange:#ff8c00;
+  --red:#d7263d; --yellow:#f4c20d; --darkblue:#1b4f8c;
+  --accent: var(--gold-fill);
+  --gold2:#ffd75e;
+  --tile: 104px;
+}
+@media (max-width:640px){ :root{ --header-h: 60px; } }
