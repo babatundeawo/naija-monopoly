@@ -1,0 +1,79 @@
+# Builds, checks and publishes the website to GitHub Pages.
+# - On every push to main (and on demand): build, check, deploy.
+# - On pull requests: build and check only, so nothing goes live until the pull request is merged.
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build and check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Read GitHub Pages settings
+        id: pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+
+      - name: Build the site
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+        run: node scripts/build.mjs
+
+      - name: Check the build (syntax, links, required files)
+        run: node scripts/check.mjs
+
+      - name: Check external links (report only)
+        uses: lycheeverse/lychee-action@v2
+        continue-on-error: true
+        with:
+          args: --no-progress --accept 200,206,429 --exclude 'fonts\.(googleapis|gstatic)\.com' 'dist/**/*.html'
+          fail: false
+
+      - name: Lighthouse report (does not block deployment)
+        uses: treosh/lighthouse-ci-action@v12
+        continue-on-error: true
+        with:
+          configPath: ./.lighthouserc.json
+          uploadArtifacts: true
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

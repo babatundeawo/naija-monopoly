@@ -1,0 +1,22 @@
+name: Bug report
+description: Something in the game or website is not working as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Describe what you did and what went wrong. If it is a rules problem, say which tile or card was involved.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect instead?
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Safari on iPhone 15, Chrome on Windows 11, the Windows app, ...
