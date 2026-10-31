@@ -4,7 +4,7 @@ Open any file on GitHub, select the pencil icon, edit, and follow the steps in [
 
 ## Colours
 
-`src/css/tokens.css`. Each colour is written as `light-dark(light value, dark value)`. Change the first value for light mode and the second for dark mode. The main ones:
+`src/css/tokens.css`. Each colour appears twice: once in the first `:root` block (light mode) and once in the two dark blocks below it (dark mode). Change both. The main ones:
 
 - `--green`: primary brand colour
 - `--gold-fill`: accent colour
@@ -22,12 +22,16 @@ All page text is in `src/index.html`: the headline, feature cards, neighbourhood
 
 ## Fonts
 
-The fonts are chosen in two places: the Google Fonts `<link>` in `src/index.html` (and `src/404.html`), and `--font-display` and `--font-body` in `src/css/tokens.css`. Replace the family names in both. To host fonts yourself, upload the font files to `src/assets/fonts/` and add `@font-face` rules to `src/css/base.css`, then remove the Google Fonts links and the `fonts.googleapis.com` and `fonts.gstatic.com` entries in the page's Content Security Policy.
+The site uses each visitor's own system fonts, so there is nothing to download. `--font-display` and `--font-body` in `src/css/tokens.css` list fonts in order of preference. To use a custom font: upload a `.woff2` file to `src/assets/fonts/`, add an `@font-face` rule (with `font-display: swap`) to `src/css/base.css`, and put the font's name first in the matching `--font-` line. Use only fonts whose licence allows web use. The Content Security Policy already allows fonts from this site.
 
 ## Images and icons
 
 Logo, favicons and the social preview image are in `src/assets/`. Replace them with files of the same name and size: `favicon.svg`, `favicon-32.png` (32 px), `apple-touch-icon.png` (180 px), `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` and `og-image.png` (1200 × 630). The header logo is the inline SVG at the top of `src/index.html`. `icon.png` in the repository root (256 px) is the Windows app icon.
 
-## Screenshots in the README
+## Screenshots
 
-`docs/assets/preview-home.png` and `preview-game.png`. Replace them with fresh screenshots of the live site whenever the look changes.
+`docs/assets/preview-home.png` and `preview-game.png` appear in the README. The install dialog on phones uses the four images in `src/assets/screenshots/` (two 1440 × 900, two 780 × 1688). Replace them whenever the look changes, keeping the same sizes.
+
+## Offline and updates
+
+The build keeps every page file on the visitor's device. When you publish a change, phones notice it automatically and show a **Refresh** notice. You do not need to do anything.

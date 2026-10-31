@@ -42,6 +42,14 @@ function canBuildOn(t){
   if(t.houses<4 && houseBank<=0) return false;
   return true;
 }
+/* Official rule: buildings are sold evenly too, and a hotel can only be sold back if the bank has four houses to give. */
+function canSellOn(t){
+  if(t.t!=='prop' || t.houses<=0) return false;
+  const groupTiles = TILES.filter(x=>x.grp===t.grp && x.t==='prop');
+  if(t.houses < Math.max(...groupTiles.map(x=>x.houses))) return false;
+  if(t.houses===5 && houseBank<4) return false;
+  return true;
+}
 function renderPropertiesPanel(){
   const panel = document.getElementById('buildPanel');
   /* Manage the active human player's holdings; during a computer turn, show the first human player. */
@@ -84,7 +92,7 @@ function renderPropertiesPanel(){
         sellBtn.className='secondary';
         sellBtn.textContent='Sell';
         sellBtn.setAttribute('aria-label', `Sell a building on ${t.n}`);
-        sellBtn.disabled = cur!==p || blocking;
+        sellBtn.disabled = cur!==p || blocking || !canSellOn(t);
         sellBtn.onclick = ()=> sellHouseUI(i);
         row.appendChild(sellBtn);
       }

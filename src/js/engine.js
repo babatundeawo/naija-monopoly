@@ -37,6 +37,7 @@ function animateCashChange(p, amount){
 /* ============================= TURN FLOW CONTROL ============================= */
 function continueTurnFlow(){
   turnEpoch++;
+  inMotion = false;
   const p = currentPlayer();
   if(p.bankrupt){ nextPlayerAuto(); return; }
   if(pendingWasDouble){
@@ -52,6 +53,7 @@ function continueTurnFlow(){
       setTimeout(()=>{ if(currentPlayer()===p && !blocking) endTurn(); }, 950);
     }
   }
+  saveGame();
 }
 
 /* ============================= DICE / MOVEMENT ============================= */
@@ -60,6 +62,7 @@ function rollDice(){
   if(turnRolled || blocking) return;
   if(p.inJail){ handleJailRoll(p); return; }
   turnRolled = true;
+  inMotion = true;
   document.getElementById('rollBtn').disabled = true;
   const d1 = 1+Math.floor(Math.random()*6);
   const d2 = 1+Math.floor(Math.random()*6);
@@ -485,7 +488,7 @@ function sellHouseRaw(t){
 }
 function sellHouseUI(i){
   const t = TILES[i];
-  if(t.houses<=0 || blocking) return;
+  if(t.houses<=0 || blocking || !canSellOn(t)) return;
   const refund = sellHouseRaw(t);
   log(`💰 ${t.owner.name} sold a building on ${t.n} for ₦${refund}.`);
   renderAll();
@@ -495,6 +498,7 @@ function sellHouseUI(i){
 function handleJailRoll(p){
   pendingWasDouble = false;
   turnRolled = true;
+  inMotion = true;
   document.getElementById('rollBtn').disabled = true;
   const d1 = 1+Math.floor(Math.random()*6);
   const d2 = 1+Math.floor(Math.random()*6);
@@ -569,6 +573,8 @@ function checkBankrupt(p){
 function checkWin(){
   const alive = players.filter(p=>!p.bankrupt);
   if(alive.length===1){
+    gameOver = true;
+    clearSave();
     setTimeout(()=>{
       sfxWin();
       launchConfetti();

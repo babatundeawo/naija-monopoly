@@ -72,8 +72,8 @@ body[data-view="game"] .main-nav + .header-actions{ margin-left:auto; }
 .hero::before{
   content:""; position:absolute; inset:-20% -10% auto -10%; height:90%; z-index:-1;
   background:
-    radial-gradient(40% 50% at 15% 20%, light-dark(rgba(0,135,81,.14), rgba(31,194,127,.16)), transparent 70%),
-    radial-gradient(35% 45% at 85% 10%, light-dark(rgba(232,185,62,.22), rgba(232,185,62,.12)), transparent 70%);
+    radial-gradient(40% 50% at 15% 20%, var(--hero-glow-1), transparent 70%),
+    radial-gradient(35% 45% at 85% 10%, var(--hero-glow-2), transparent 70%);
 }
 .hero::after{
   content:""; position:absolute; inset:0; z-index:-1; opacity:.5;
@@ -105,7 +105,7 @@ body[data-view="game"] .main-nav + .header-actions{ margin-left:auto; }
   background:var(--surface); border:var(--bw) solid var(--border); border-radius:var(--r-xl); padding:var(--s-6);
   box-shadow:var(--shadow-3); position:relative;
 }
-.setup-card::before{ content:""; position:absolute; inset:0 0 auto 0; height:6px; border-radius:var(--r-xl) var(--r-xl) 0 0; background:linear-gradient(90deg,var(--green) 0 33.3%, light-dark(#e4e0d0, #ffffff) 33.3% 66.6%, var(--green) 66.6%); }
+.setup-card::before{ content:""; position:absolute; inset:0 0 auto 0; height:6px; border-radius:var(--r-xl) var(--r-xl) 0 0; background:linear-gradient(90deg,var(--green) 0 33.3%, var(--flag-white) 33.3% 66.6%, var(--green) 66.6%); }
 .setup-card h2{ font-size:var(--fs-xl); letter-spacing:-0.03em; }
 .setup-card .sub{ color:var(--text-muted); font-size:var(--fs-sm); margin:var(--s-2) 0 var(--s-5); }
 #playerRows{ display:flex; flex-direction:column; gap:var(--s-3); }

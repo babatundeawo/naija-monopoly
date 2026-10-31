@@ -57,8 +57,50 @@ for await (const f of walk(target)) {
 }
 
 // 3. Required files
-for (const f of ['index.html', '404.html', 'manifest.webmanifest', 'robots.txt', 'sitemap.xml', 'assets/favicon.svg', 'assets/og-image.png', 'assets/apple-touch-icon.png']) {
+for (const f of ['index.html', '404.html', 'offline.html', 'sw.js', 'manifest.webmanifest', 'robots.txt', 'sitemap.xml', 'assets/favicon.svg', 'assets/og-image.png', 'assets/apple-touch-icon.png']) {
   if (!(await exists(join(target, f)))) errors.push(`Missing required file: ${f}`);
+}
+
+// 4. Web app manifest: every icon and screenshot must exist and match its stated size
+try {
+  const manifest = JSON.parse(await readFile(join(target, 'manifest.webmanifest'), 'utf8'));
+  for (const key of ['name', 'short_name', 'start_url', 'scope', 'display', 'theme_color', 'background_color', 'id']) {
+    if (!manifest[key]) errors.push(`manifest.webmanifest: missing "${key}"`);
+  }
+  const images = [...(manifest.icons || []), ...(manifest.screenshots || []), ...((manifest.shortcuts || []).flatMap((s) => s.icons || []))];
+  for (const img of images) {
+    const file = join(target, img.src);
+    if (!(await exists(file))) { errors.push(`manifest.webmanifest: missing image ${img.src}`); continue; }
+    const buf = await readFile(file);
+    if (buf.slice(1, 4).toString() === 'PNG') {
+      const size = `${buf.readUInt32BE(16)}x${buf.readUInt32BE(20)}`;
+      if (img.sizes && img.sizes !== size) errors.push(`manifest.webmanifest: ${img.src} is ${size}, but the manifest says ${img.sizes}`);
+    }
+  }
+  const purposes = (manifest.icons || []).map((i) => i.purpose || 'any');
+  if (!purposes.includes('maskable')) errors.push('manifest.webmanifest: no maskable icon');
+} catch (e) {
+  errors.push(`manifest.webmanifest: could not be read (${e.message})`);
+}
+
+// 5. Service worker: placeholders filled, every offline file exists, no third-party addresses
+if (target === dist && (await exists(join(dist, 'sw.js')))) {
+  const sw = await readFile(join(dist, 'sw.js'), 'utf8');
+  if (/%VERSION%|%PRECACHE%/.test(sw)) errors.push('sw.js: version or offline list was not filled in');
+  const list = sw.match(/JSON\.parse\('(\[.*?\])'\)/s);
+  if (!list) errors.push('sw.js: could not find the offline file list');
+  else for (const f of JSON.parse(list[1])) {
+    if (f !== './' && !(await exists(join(dist, f)))) errors.push(`sw.js: offline list names a missing file: ${f}`);
+  }
+}
+
+// 6. Privacy and security: no third-party requests, a Content Security Policy on every page
+for await (const f of walk(target)) {
+  if (!['.html', '.css', '.js', '.webmanifest'].includes(extname(f))) continue;
+  const text = await readFile(f, 'utf8');
+  const rel = relative(root, f);
+  if (/fonts\.(googleapis|gstatic)\.com/.test(text)) errors.push(`${rel}: loads Google Fonts (fonts must be hosted on this site)`);
+  if (extname(f) === '.html' && !/http-equiv="Content-Security-Policy"/.test(text)) errors.push(`${rel}: no Content Security Policy`);
 }
 
 for (const w of warnings) console.log(`::warning::${w}`);

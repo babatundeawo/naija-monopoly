@@ -30,6 +30,8 @@ Naija Monopoly (Wealth Wahala Edition) takes the classic property-trading game t
 - Computer opponents that roll, buy, bid and answer trade offers
 - Nigerian flavour throughout: Aza Chance and Ileya Chest cards, Kirikiri Prison, NEPA and NITEL, and tokens such as the Danfo Bus, Okada and Jollof Pot
 - Synthesised sound effects you can mute, and a camera that follows the active player or shows the whole board
+- Installable on Android, iPhone and desktop, and playable offline once opened
+- Your game saves itself on your device, so you can close the tab and resume later
 - Light and dark themes, keyboard-friendly controls and a layout that works from phones to wide screens
 - Also packaged as a Windows desktop app, built by the repository's *Build Windows EXE* workflow
 
@@ -38,7 +40,8 @@ Naija Monopoly (Wealth Wahala Edition) takes the classic property-trading game t
 ## How to use it
 
 1. Open the [live site](https://babatundeawo.github.io/naija-monopoly/).
-2. Choose two to four players. Give each a name and a token, and decide whether a person or the computer plays that seat.
+2. Choose two to four players. To keep it on your phone, use **Install** (Android) or Share, then **Add to Home Screen** (iPhone).
+   Give each a name and a token, and decide whether a person or the computer plays that seat.
 3. Select **Start game**, then **Roll dice** on your turn. Landing on a property lets you buy it or send it to auction.
 4. Select any property tile to read its deed. Use the left panel to build, and **Propose trade** to deal with another player.
 5. The last player who is not bankrupt wins. Open **Rules** at any time for a reminder.
@@ -46,9 +49,10 @@ Naija Monopoly (Wealth Wahala Edition) takes the classic property-trading game t
 ## Tech stack
 
 - Plain HTML, CSS and JavaScript, with no framework and no runtime dependencies
+- A service worker for offline play, and a web app manifest for installing
 - [Electron](https://www.electronjs.org/) and electron-builder for the Windows app
 - GitHub Actions and GitHub Pages for building and hosting
-- Fonts: Bricolage Grotesque and Plus Jakarta Sans, loaded from Google Fonts
+- Fonts: the visitor's own system fonts, so nothing is downloaded and nothing is tracked
 
 ## Project structure
 
@@ -56,7 +60,9 @@ Naija Monopoly (Wealth Wahala Edition) takes the classic property-trading game t
 src/                  The website and game
   index.html          Page markup and all page text
   css/                Design tokens, base styles, site and game styles
-  js/                 Game rules (engine.js), board, rendering, audio and page behaviour
+  js/                 Game rules (engine.js), board, rendering, audio, saving (save.js) and app behaviour (pwa.js)
+  sw.js               Service worker for offline play
+  offline.html        Page shown when a link cannot load without a connection
   assets/             Logo, icons and social preview image
 scripts/              Build and check scripts used by GitHub Actions
 docs/                 Guides and screenshots
@@ -76,6 +82,5 @@ Please report vulnerabilities privately. See [SECURITY.md](SECURITY.md).
 
 Released under the [MIT License](LICENSE).
 
-- Fonts: [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) and [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans), both under the SIL Open Font License
 - Interface icons are simple line icons adapted from [Feather](https://feathericons.com/) (MIT)
 - Tokens and card art use system emoji and illustrations drawn for this project

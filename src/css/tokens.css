@@ -1,42 +1,25 @@
 /* ==========================================================================
    Design tokens — the single place to change colours, type, spacing and motion.
-   Every colour is written as light-dark(<light>, <dark>) so one value covers both themes.
+   Colours are defined once for light and once for dark (see the dark blocks below), so they work in every browser.
    ========================================================================== */
 :root{
-  color-scheme: light dark;               /* follows the visitor's system by default */
+  color-scheme: light dark;
+
 
   /* Brand */
-  --green:        light-dark(#008751, #1fc27f);   /* primary: Nigerian flag green */
-  --green-strong: light-dark(#006b40, #4ddc9d);
-  --on-green:     light-dark(#ffffff, #03140b);
-  --gold:         light-dark(#b8860b, #e8b93e);   /* accent: gold, used as text/lines */
   --gold-fill:    #e8b93e;                        /* accent fill (same in both themes) */
   --on-gold:      #231a02;
 
   /* Neutral scale */
-  --bg:           light-dark(#f6f4ec, #060e09);
-  --bg-raised:    light-dark(#fbfaf5, #0a1510);
-  --surface:      light-dark(#ffffff, #0e1a13);
-  --surface-2:    light-dark(#efece1, #14241b);
-  --surface-3:    light-dark(#e6e2d4, #1b3025);
-  --border:       light-dark(#dcd7c6, #213a2b);
-  --border-strong:light-dark(#bdb7a3, #35553f);
-  --text:         light-dark(#0e1a13, #eef5f0);
-  --text-muted:   light-dark(#4d5a52, #9bb0a3);
-  --text-faint:   light-dark(#6f7b73, #7a9183);
 
   /* Semantic */
-  --success: light-dark(#13804a, #3ad98c);
-  --warning: light-dark(#a15c00, #f2b64a);
-  --error:   light-dark(#c4162f, #ff6b7d);
-  --info:    light-dark(#1d6cc2, #6db0ff);
 
   /* Legacy names used by game templates */
   --muted: var(--text-muted);
 
   /* Typography */
-  --font-display: "Bricolage Grotesque", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --font-body: "Plus Jakarta Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: ui-rounded, "SF Pro Rounded", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --fs-xs:  clamp(0.75rem, 0.73rem + 0.1vw, 0.8125rem);
   --fs-sm:  clamp(0.8125rem, 0.79rem + 0.12vw, 0.9rem);
   --fs-md:  clamp(0.9375rem, 0.91rem + 0.15vw, 1.0625rem);
@@ -58,11 +41,6 @@
   --bw: 1px;
 
   /* Elevation */
-  --shadow-1: 0 1px 2px light-dark(rgba(14,26,19,.06), rgba(0,0,0,.4)), 0 1px 1px light-dark(rgba(14,26,19,.04), rgba(0,0,0,.3));
-  --shadow-2: 0 8px 24px -8px light-dark(rgba(14,26,19,.16), rgba(0,0,0,.6)), 0 2px 6px light-dark(rgba(14,26,19,.06), rgba(0,0,0,.4));
-  --shadow-3: 0 30px 60px -20px light-dark(rgba(14,26,19,.28), rgba(0,0,0,.75));
-  --glow: 0 0 0 1px light-dark(rgba(0,135,81,.25), rgba(31,194,127,.3)), 0 12px 40px -12px light-dark(rgba(0,135,81,.35), rgba(31,194,127,.35));
-  --focus: 0 0 0 3px light-dark(#ffffff, #060e09), 0 0 0 5px light-dark(#006b40, #4ddc9d);
 
   /* Layers */
   --z-board: 1; --z-header: 50; --z-progress: 60; --z-float: 300; --z-modal: 500; --z-confetti: 600;
@@ -75,9 +53,94 @@
   /* Layout */
   --container: 1200px;
   --header-h: 68px;
+  --green:        #008751;   /* primary: Nigerian flag green */
+  --green-strong: #006b40;
+  --on-green:     #ffffff;
+  --gold:         #b8860b;   /* accent: gold, used as text/lines */
+  --bg:           #f6f4ec;
+  --bg-raised:    #fbfaf5;
+  --surface:      #ffffff;
+  --surface-2:    #efece1;
+  --surface-3:    #e6e2d4;
+  --border:       #dcd7c6;
+  --border-strong:#bdb7a3;
+  --text:         #0e1a13;
+  --text-muted:   #4d5a52;
+  --text-faint:   #6f7b73;
+  --success: #13804a;
+  --warning: #a15c00;
+  --error:   #c4162f;
+  --info:    #1d6cc2;
+  --shadow-1: 0 1px 2px rgba(14,26,19,.06), 0 1px 1px rgba(14,26,19,.04);
+  --shadow-2: 0 8px 24px -8px rgba(14,26,19,.16), 0 2px 6px rgba(14,26,19,.06);
+  --shadow-3: 0 30px 60px -20px rgba(14,26,19,.28);
+  --glow: 0 0 0 1px rgba(0,135,81,.25), 0 12px 40px -12px rgba(0,135,81,.35);
+  --focus: 0 0 0 3px #ffffff, 0 0 0 5px #006b40;
+  --hero-glow-1: rgba(0,135,81,.14);
+  --hero-glow-2: rgba(232,185,62,.22);
+  --flag-white: #e4e0d0;
+}
+/* Dark values: the system setting applies unless the visitor picked a theme with the switch. */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+  --green:        #1fc27f;   /* primary: Nigerian flag green */
+  --green-strong: #4ddc9d;
+  --on-green:     #03140b;
+  --gold:         #e8b93e;   /* accent: gold, used as text/lines */
+  --bg:           #060e09;
+  --bg-raised:    #0a1510;
+  --surface:      #0e1a13;
+  --surface-2:    #14241b;
+  --surface-3:    #1b3025;
+  --border:       #213a2b;
+  --border-strong:#35553f;
+  --text:         #eef5f0;
+  --text-muted:   #9bb0a3;
+  --text-faint:   #7a9183;
+  --success: #3ad98c;
+  --warning: #f2b64a;
+  --error:   #ff6b7d;
+  --info:    #6db0ff;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.3);
+  --shadow-2: 0 8px 24px -8px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.4);
+  --shadow-3: 0 30px 60px -20px rgba(0,0,0,.75);
+  --glow: 0 0 0 1px rgba(31,194,127,.3), 0 12px 40px -12px rgba(31,194,127,.35);
+  --focus: 0 0 0 3px #060e09, 0 0 0 5px #4ddc9d;
+  --hero-glow-1: rgba(31,194,127,.16);
+  --hero-glow-2: rgba(232,185,62,.12);
+  --flag-white: #ffffff;
+  }
 }
 :root[data-theme="light"]{ color-scheme: light; }
-:root[data-theme="dark"]{ color-scheme: dark; }
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --green:        #1fc27f;   /* primary: Nigerian flag green */
+  --green-strong: #4ddc9d;
+  --on-green:     #03140b;
+  --gold:         #e8b93e;   /* accent: gold, used as text/lines */
+  --bg:           #060e09;
+  --bg-raised:    #0a1510;
+  --surface:      #0e1a13;
+  --surface-2:    #14241b;
+  --surface-3:    #1b3025;
+  --border:       #213a2b;
+  --border-strong:#35553f;
+  --text:         #eef5f0;
+  --text-muted:   #9bb0a3;
+  --text-faint:   #7a9183;
+  --success: #3ad98c;
+  --warning: #f2b64a;
+  --error:   #ff6b7d;
+  --info:    #6db0ff;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.3);
+  --shadow-2: 0 8px 24px -8px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.4);
+  --shadow-3: 0 30px 60px -20px rgba(0,0,0,.75);
+  --glow: 0 0 0 1px rgba(31,194,127,.3), 0 12px 40px -12px rgba(31,194,127,.35);
+  --focus: 0 0 0 3px #060e09, 0 0 0 5px #4ddc9d;
+  --hero-glow-1: rgba(31,194,127,.16);
+  --hero-glow-2: rgba(232,185,62,.12);
+  --flag-white: #ffffff;
+}
 
 /* Board palette: the board is the artwork, so it looks the same in both themes. */
 :root{
