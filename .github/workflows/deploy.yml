@@ -65,7 +65,7 @@ jobs:
 
       - name: Attach the built site to the pull request (download it to look around)
         if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: site-preview
           path: dist
