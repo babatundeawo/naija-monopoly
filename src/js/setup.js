@@ -11,7 +11,7 @@ function addPlayerRow(){
   const idx = rows.children.length;
   const div = document.createElement('div');
   div.className='player-row';
-  div.innerHTML = `<span class="swatch" style="background:${COLORS[idx]}" aria-hidden="true"></span>
+  div.innerHTML = `<span class="swatch" data-bg="${COLORS[idx]}" aria-hidden="true"></span>
     <label class="field grow"><span class="field-label">Player ${idx+1} name</span>
       <input type="text" value="Player ${idx+1}" maxlength="14" autocomplete="off" spellcheck="false"></label>
     <label class="field"><span class="field-label">Token</span>

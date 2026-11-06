@@ -53,6 +53,15 @@ The previous version is published again. Nothing is ever lost, because GitHub ke
 
 The build reads the address from GitHub automatically, so links, the sitemap and social previews update by themselves.
 
+## Check the phone app after a change
+
+1. Open the live address on an Android phone in Chrome. After a few seconds an **Install** button appears in the top bar. Tap it.
+2. On iPhone, open it in Safari, tap **Share**, then **Add to Home Screen**.
+3. Switch on airplane mode and open the app again. It should still load, and your last game is offered under **Resume**.
+4. After you publish a change, open the installed app online twice. A **Refresh** notice appears; tap it to update.
+
+If a phone keeps showing an old version, close the app fully and open it again while online.
+
 ## Windows app
 
 The **Build Windows EXE** workflow builds the desktop version. Open the **Actions** tab, select the latest run of **Build Windows EXE**, and download **NaijaMonopoly-Windows** under **Artifacts**. Run it manually from the same page with **Run workflow**.

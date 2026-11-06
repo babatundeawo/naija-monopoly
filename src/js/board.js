@@ -22,7 +22,7 @@ function buildingMarkup(t){
 }
 function ownerRibbonMarkup(t){
   if(!(t.t==='prop'||t.t==='rail'||t.t==='util') || !t.owner) return '';
-  return `<div class="owner-ribbon" style="background:${t.owner.color}cc;">
+  return `<div class="owner-ribbon" data-bg="${t.owner.color}cc">
     <span class="otok">${t.owner.token}</span><span>${t.owner.name}</span>
   </div>`;
 }
@@ -43,7 +43,7 @@ function buildBoard(){
       let priceLbl = t.t==='prop'||t.t==='rail'||t.t==='util' ? `₦${t.price}` : (t.t==='tax'?`₦${t.amt}`:'');
       const artStyle = tileArtStyle(t);
       if(artStyle) div.style.cssText += artStyle;
-      div.innerHTML = `${barColor!=='transparent'?`<div class="bar" style="background:${barColor}"></div>`:''}
+      div.innerHTML = `${barColor!=='transparent'?`<div class="bar" data-bg="${barColor}"></div>`:''}
         <div class="name">${t.n}</div>
         <div class="icon">${tileTypeIcon(t)}</div>
         ${buildingMarkup(t)}
