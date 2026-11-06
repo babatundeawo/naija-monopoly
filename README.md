@@ -52,7 +52,7 @@ Naija Monopoly (Wealth Wahala Edition) takes the classic property-trading game t
 - A service worker for offline play, and a web app manifest for installing
 - [Electron](https://www.electronjs.org/) and electron-builder for the Windows app
 - GitHub Actions and GitHub Pages for building and hosting
-- Fonts: the visitor's own system fonts, so nothing is downloaded and nothing is tracked
+- Fonts: Bricolage Grotesque for headings (self-hosted, no third-party requests) and the visitor's own system font for text
 
 ## Project structure
 
@@ -81,6 +81,8 @@ Please report vulnerabilities privately. See [SECURITY.md](SECURITY.md).
 ## License and credits
 
 Released under the [MIT License](LICENSE).
+
+Heading font: [Bricolage Grotesque](https://github.com/ateliertriay/bricolage), SIL Open Font License 1.1 (see `src/assets/fonts/OFL-Bricolage-Grotesque.txt`).
 
 - Interface icons are simple line icons adapted from [Feather](https://feathericons.com/) (MIT)
 - Tokens and card art use system emoji and illustrations drawn for this project

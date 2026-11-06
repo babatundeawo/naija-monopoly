@@ -1,5 +1,7 @@
 /* ============================= DYNAMIC CAMERA (follow-player zoom) ============================= */
-let camMode = 'auto'; // 'auto' follows current player, 'full' pins the whole board
+/* 'auto' follows the current player (zoomed in), 'full' shows the whole board.
+   Phones start zoomed in because the full board is tiny there; larger screens start with the full board. */
+let camMode = window.matchMedia('(min-width: 900px)').matches ? 'full' : 'auto';
 function isModalOpen(){ return !!document.querySelector('.modal-bg'); }
 function toggleCamMode(){
   camMode = (camMode==='full') ? 'auto' : 'full';
@@ -9,7 +11,13 @@ function toggleCamMode(){
   }
   updateCamera();
 }
+function syncCamButton(){
+  const btn = document.getElementById('camToggleBtn');
+  const label = btn && btn.querySelector('.btn-label');
+  if(label) label.textContent = camMode==='full' ? 'Follow player' : 'Full board';
+}
 function updateCamera(immediate){
+  syncCamButton();
   const viewport = document.getElementById('boardViewport');
   const board = document.getElementById('board');
   const label = document.getElementById('camLabel');

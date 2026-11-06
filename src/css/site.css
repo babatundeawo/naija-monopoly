@@ -55,7 +55,7 @@ body[data-view="game"] .main-nav + .header-actions{ margin-left:auto; }
   .main-nav.is-open{ transform:none; opacity:1; visibility:visible; }
   .main-nav a{ padding:0 var(--s-3); min-height:48px; font-size:var(--fs-md); }
   .main-nav a::after{ display:none; }
-  .text-btn .btn-label{ display:none; }
+  .text-btn .btn-label{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
   .header-actions .text-btn{ min-width:44px; padding:0; }
 }
 
@@ -204,3 +204,9 @@ body[data-view="game"] .menu-btn{ display:none; }
 @media (max-width:380px){
   .brand span{ display:none; }
 }
+
+/* Utility classes (replace inline styles so the Content Security Policy can forbid them) */
+.line-ico{ fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.i-0{ --i:0; } .i-1{ --i:1; } .i-2{ --i:2; } .i-3{ --i:3; } .i-4{ --i:4; } .i-5{ --i:5; } .i-6{ --i:6; } .i-7{ --i:7; } 
+.c-brown{ --c:var(--brown); } .c-lightblue{ --c:var(--lightblue); } .c-pink{ --c:var(--pink); } .c-orange{ --c:var(--orange); } .c-red{ --c:var(--red); } .c-yellow{ --c:var(--yellow); } .c-darkblue{ --c:var(--darkblue); } .c-green{ --c:#2e8b57; } 
+.mt-4{ margin-top:var(--s-4); } .mt-5{ margin-top:var(--s-5); }

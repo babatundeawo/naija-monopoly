@@ -22,7 +22,7 @@ All page text is in `src/index.html`: the headline, feature cards, neighbourhood
 
 ## Fonts
 
-The site uses each visitor's own system fonts, so there is nothing to download. `--font-display` and `--font-body` in `src/css/tokens.css` list fonts in order of preference. To use a custom font: upload a `.woff2` file to `src/assets/fonts/`, add an `@font-face` rule (with `font-display: swap`) to `src/css/base.css`, and put the font's name first in the matching `--font-` line. Use only fonts whose licence allows web use. The Content Security Policy already allows fonts from this site.
+Headings use **Bricolage Grotesque**, stored in `src/assets/fonts/` and declared in `src/css/fonts.css`. Body text uses each visitor's own system font, so almost nothing is downloaded. `--font-display` and `--font-body` in `src/css/tokens.css` list the fonts in order of preference. To swap the heading font: upload a `.woff2` file to `src/assets/fonts/`, add an `@font-face` rule (with `font-display: swap`) to `src/css/fonts.css`, and put the font's name first in `--font-display`. Use only fonts whose licence allows web use, and keep their licence file next to them. The Content Security Policy already allows fonts from this site.
 
 ## Images and icons
 

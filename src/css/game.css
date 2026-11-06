@@ -6,7 +6,7 @@
 }
 #leftbar, #sidebar{ display:flex; flex-direction:column; gap:var(--s-4); position:sticky; top:calc(var(--header-h) + var(--s-4)); max-height:calc(100dvh - var(--header-h) - 2*var(--s-4)); overflow-y:auto; padding:2px; }
 .card{ background:var(--surface); border:var(--bw) solid var(--border); border-radius:var(--r-lg); padding:var(--s-4); box-shadow:var(--shadow-1); }
-.card h3{ font-size:var(--fs-md); letter-spacing:-0.02em; margin:0 0 var(--s-3); }
+.card h3, .card h2{ font-size:var(--fs-md); letter-spacing:-0.02em; margin:0 0 var(--s-3); }
 
 /* Board frame (Nigerian flag stripes) */
 .board-wrap{
