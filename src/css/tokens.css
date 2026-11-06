@@ -18,7 +18,7 @@
   --muted: var(--text-muted);
 
   /* Typography */
-  --font-display: ui-rounded, "SF Pro Rounded", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", ui-rounded, "SF Pro Rounded", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-body: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --fs-xs:  clamp(0.75rem, 0.73rem + 0.1vw, 0.8125rem);
   --fs-sm:  clamp(0.8125rem, 0.79rem + 0.12vw, 0.9rem);

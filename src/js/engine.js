@@ -427,11 +427,11 @@ function showTileInfo(i){
       actions += `<p class="muted">Sell all houses on this property before mortgaging.</p>`;
     }
   }
-  modal(`<h3 class="deed-title" style="--deed:${groupColor}">${t.n}</h3>
+  modal(`<h3 class="deed-title" data-deed="${groupColor}">${t.n}</h3>
     <p>Price: ₦${t.price} ${t.mortgaged?'<strong class="warn-text">(Mortgaged)</strong>':''}</p>
     <p class="owner-line">Owner:
       ${t.owner
-        ? `<span class="owner-chip" style="background:${t.owner.color}">${t.owner.token} ${t.owner.name}</span>`
+        ? `<span class="owner-chip" data-bg="${t.owner.color}">${t.owner.token} ${t.owner.name}</span>`
         : `<span class="muted">Bank (unowned)</span>`}
     </p>
     ${t.t==='prop'?`<p>Buildings: ${t.houses===5?'🏨 Hotel':(t.houses>0?'🏠'.repeat(t.houses):'None')}</p>`:''}
